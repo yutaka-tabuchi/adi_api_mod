@@ -1,0 +1,4 @@
+
+hello:
+	gcc -o $@ *.c
+

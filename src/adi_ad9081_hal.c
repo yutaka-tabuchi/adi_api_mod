@@ -17,7 +17,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include "adi_ad9081_hal.h"
-
+#include "axi_gpio.h"
+#include "axi_gpio_spi_i2c.h"
 
 /*============= C O D E ====================*/
 int32_t adi_ad9081_hal_hw_open(adi_ad9081_device_t *device)
@@ -62,10 +63,17 @@ int32_t adi_ad9081_hal_reset_pin_ctrl(adi_ad9081_device_t *device,
 {
 	AD9081_NULL_POINTER_RETURN(device);
 	//AD9081_NULL_POINTER_RETURN(device->hal_info.reset_pin_ctrl);
-	unsigned int* gpio=(unsigned int*)0xA0000000;
+	//unsigned int* gpio=(unsigned int*)0xA0000000;
+        //
+	//if(enable>0)*gpio = 0x29;
+	//else *gpio = 0x28;
 
-	if(enable>0)*gpio = 0x29;
-	else *gpio = 0x28;
+        if(enable > 0){
+            axi_gpio_write_once(0xA0000000, 1);
+        }else{
+            axi_gpio_write_once(0xA0000000, 0);
+        }
+        
 //	if (API_CMS_ERROR_OK != device->hal_info.reset_pin_ctrl(
 //					device->hal_info.user_data, enable)) {
 //		return API_CMS_ERROR_RESET_PIN_CTRL;
@@ -86,7 +94,7 @@ int32_t adi_ad9081_hal_log_write(adi_ad9081_device_t *device,
 //	    (device->hal_info.log_write != NULL)) {
 		va_start(argp, comment);
 		vsnprintf(logMessage, sizeof(logMessage), comment, argp);
-		printf(logMessage);
+		printf("%s", logMessage);
 		printf("\n");
 //		if (API_CMS_ERROR_OK !=
 //		    device->hal_info.log_write(device->hal_info.user_data,
@@ -253,46 +261,7 @@ int32_t adi_ad9081_hal_bf_set(adi_ad9081_device_t *device, uint32_t reg,
 
 unsigned char AD9082_R(unsigned short addr)
 {
-	unsigned int* gpio=(unsigned int*)0xA0000000;
-	int i;
-	unsigned char ret;
-
-	*gpio = 0x29;
-	usleep(3000);
-	//CS=0
-	*gpio = 0x21;
-	usleep(100);
-	addr = addr & 0x3FFF;
-	addr = addr | 0x8000;
-	for(i=0;i<16;i++){
-		*gpio = 0x21;
-		usleep(2);
-		if(addr & 0x8000)*gpio = 0x21+0x04;
-		else *gpio = 0x21;
-		usleep(10);
-		if(addr & 0x8000)*gpio = 0x23+0x04;
-		else *gpio = 0x23;
-		usleep(10);
-		addr = addr <<1;
-	}
-
-	ret=0;
-	for(i=0;i<8;i++){
-		ret = ret << 1;
-		*gpio = 0x21;
-		usleep(10);
-		if( (*(gpio+2)) & 0x1  )ret=ret + 1;
-		*gpio = 0x23;
-		usleep(10);
-	}
-
-	usleep(100);
-	//CS=1
-	*gpio = 0x29;
-	usleep(300);
-
-	return ret;
-
+    return axi_gpio_spi_read(addr);
 }
 
 
@@ -398,44 +367,7 @@ int32_t adi_ad9081_hal_reg_get(adi_ad9081_device_t *device, uint32_t reg,
 
 void AD9082_W(unsigned short addr,unsigned char data)
 {
-	unsigned int* gpio=(unsigned int*)0xA0000000;
-	int i;
-
-	*gpio = 0x29;
-	usleep(3000);
-	//CS=0
-	*gpio = 0x21;
-	usleep(100);
-	addr = addr & 0x3FFF;
-	for(i=0;i<16;i++){
-		*gpio = 0x21;
-		usleep(2);
-		if(addr & 0x8000)*gpio = 0x21+0x04;
-		else *gpio = 0x21;
-		usleep(10);
-		if(addr & 0x8000)*gpio = 0x23+0x04;
-		else *gpio = 0x23;
-		usleep(10);
-		addr = addr <<1;
-	}
-
-	for(i=0;i<8;i++){
-		*gpio = 0x21;
-		usleep(2);
-		if(data & 0x80)*gpio = 0x21+0x04;
-		else *gpio = 0x21;
-		usleep(10);
-		if(data & 0x80)*gpio = 0x23+0x04;
-		else *gpio = 0x23;
-		usleep(10);
-		data = data <<1;
-	}
-
-
-	usleep(100);
-	//CS=1
-	*gpio = 0x29;
-	usleep(300);
+    axi_gpio_spi_write(addr, data);
 }
 
 

@@ -50,88 +50,17 @@
 #include <unistd.h>
 #include "adi_ad9081_config.h"
 #include "adi_ad9081_hal.h"
+#include "axi_gpio.h"
+#include "axi_gpio_spi_i2c.h"
 
 void HMC7044_W(unsigned short addr,unsigned char data)
 {
-	unsigned int* gpio=(unsigned int*)0xA0000000;
-	int i;
-
-	*gpio = 0x29;
-	usleep(3000);
-	//CS=0
-	*gpio = 0x09;
-	usleep(100);
-	addr = addr & 0x1FFF;
-	for(i=0;i<16;i++){
-		*gpio = 0x09;
-		usleep(2);
-		if(addr & 0x8000)*gpio = 0x09+0x40;
-		else*gpio = 0x09;
-		usleep(10);
-		if(addr & 0x8000)*gpio = 0x19+0x40;
-		else*gpio = 0x19;
-		usleep(10);
-		addr = addr <<1;
-	}
-
-	for(i=0;i<8;i++){
-		*gpio = 0x09;
-		usleep(2);
-		if(data & 0x80)*gpio = 0x09+0x40;
-		else*gpio = 0x09;
-		usleep(10);
-		if(data & 0x80)*gpio = 0x19+0x40;
-		else*gpio = 0x19;
-		usleep(10);
-		data = data <<1;
-	}
-	usleep(100);
-	//CS=1
-	*gpio = 0x29;
-	usleep(10000);
+    axi_gpio_i2c_write(addr, data);
 }
 
 unsigned char HMC7044_R(unsigned short addr)
 {
-	unsigned int* gpio=(unsigned int*)0xA0000000;
-	int i;
-	unsigned char ret;
-
-	*gpio = 0x29;
-	usleep(3000);
-	//CS=0
-	*gpio = 0x09;
-	usleep(100);
-	addr = addr & 0x1FFF;
-	addr = addr | 0x8000;
-	for(i=0;i<16;i++){
-		*gpio = 0x09;
-		usleep(2);
-		if(addr & 0x8000)*gpio = 0x09+0x40;
-		else*gpio = 0x09;
-		usleep(10);
-		if(addr & 0x8000)*gpio = 0x19+0x40;
-		else*gpio = 0x19;
-		usleep(10);
-		addr = addr <<1;
-	}
-
-	ret=0;
-	for(i=0;i<8;i++){
-		ret = ret << 1;
-		*gpio = 0x09+0x80;
-		usleep(10);
-		if( (*(gpio+2)) & 0x2  )ret=ret + 1;
-		*gpio = 0x19+0x80;
-		usleep(10);
-	}
-	usleep(100);
-	//CS=1
-	*gpio = 0x29;
-	usleep(10000);
-
-	return ret;
-
+    return axi_gpio_i2c_read(addr);
 }
 
 void HMC7044_setup(){
@@ -210,27 +139,36 @@ void SetDevinfo(adi_ad9081_device_t *ad9081_dev){
 
 void SYNCIN_set(unsigned int sync)
 {
-	unsigned int* sync_gpio=(unsigned int*)0xA0001000;
-	*sync_gpio = sync;
+    //unsigned int* sync_gpio=(unsigned int*)0xA0001000;
+    //*sync_gpio = sync;
+    axi_gpio_write_once(0xA0020000, sync);
 }
 
 int main()
 {
-	int i;
-	adi_ad9081_device_t ad9081_dev;
-	uint64_t dac_clk_hz=3200000000;
-	uint64_t adc_clk_hz=3200000000;
-	uint64_t dev_ref_clk_hz=3200000000;
+    int i;
+    adi_ad9081_device_t ad9081_dev;
+    uint64_t dac_clk_hz=3200000000;
+    uint64_t adc_clk_hz=3200000000;
+    uint64_t dev_ref_clk_hz=3200000000;
     //init_platform();
-
-    printf("Hello World\n\r");
+    
+    axi_gpio_write_once(0xA0000000, 0x0001);
+    axi_gpio_write_once(0xA0010000, 0x0804); // [11]SPI1_CS = 1, [2]SPI0_CS = 1
+    
+    printf("CHIP_TYPE     = %02x\n", axi_gpio_spi_read(0x0003));
+    printf("CHIP_GRADE    = %02x\n", axi_gpio_spi_read(0x0006));
+    printf("SPI_REVISION  = %02x\n", axi_gpio_spi_read(0x000b));
+    printf("VENDER_ID_LSB = %02x\n", axi_gpio_spi_read(0x000c));
+    printf("VENDER_ID_MSB = %02x\n", axi_gpio_spi_read(0x000d));
 
     HMC7044_setup();
 
-
     SetDevinfo(&ad9081_dev);
     adi_ad9081_device_reset(&ad9081_dev, AD9081_SOFT_RESET);
+    
     adi_ad9081_device_init(&ad9081_dev);
+
     adi_ad9081_device_clk_config_set(&ad9081_dev,dac_clk_hz, adc_clk_hz,dev_ref_clk_hz);
 
 
