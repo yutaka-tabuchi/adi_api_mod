@@ -17,8 +17,9 @@
 #include <unistd.h>
 #include <stdio.h>
 #include "adi_ad9081_hal.h"
-#include "axi_gpio.h"
-#include "axi_gpio_spi_i2c.h"
+//#include "axi_gpio.h"
+//#include "axi_gpio_spi_i2c.h"
+#include "udpsendrecv.h"
 
 /*============= C O D E ====================*/
 int32_t adi_ad9081_hal_hw_open(adi_ad9081_device_t *device)
@@ -68,11 +69,13 @@ int32_t adi_ad9081_hal_reset_pin_ctrl(adi_ad9081_device_t *device,
 	//if(enable>0)*gpio = 0x29;
 	//else *gpio = 0x28;
 
+#if 0 // GPIO is not used in QuBE
         if(enable > 0){
             axi_gpio_write_once(0xA0000000, 1);
         }else{
             axi_gpio_write_once(0xA0000000, 0);
         }
+#endif        
         
 //	if (API_CMS_ERROR_OK != device->hal_info.reset_pin_ctrl(
 //					device->hal_info.user_data, enable)) {
@@ -261,7 +264,23 @@ int32_t adi_ad9081_hal_bf_set(adi_ad9081_device_t *device, uint32_t reg,
 
 unsigned char AD9082_R(unsigned short addr)
 {
-    return axi_gpio_spi_read(addr);
+    char *val;
+    val = getenv("AD9082_CHIP");
+    int chip = 0;
+    if(val != NULL && strcmp(val, "1") == 0){
+        chip = 1;
+    }
+    char *target_addr = "10.0.0.3";
+    val = getenv("TARGET_ADDR");
+    if(val != NULL){
+        target_addr = val;
+    }
+    printf("target addr:%s\n", target_addr);
+    struct udp_env env;
+    open_socket(&env, target_addr, 16384);
+    int retval = exstickge_ad9082(&env, chip, addr, 0, EXSTICKGE_READ);
+    
+    return (unsigned char)(retval & 0x000000FF);
 }
 
 
@@ -367,7 +386,21 @@ int32_t adi_ad9081_hal_reg_get(adi_ad9081_device_t *device, uint32_t reg,
 
 void AD9082_W(unsigned short addr,unsigned char data)
 {
-    axi_gpio_spi_write(addr, data);
+    char *val;
+    val = getenv("AD9082_CHIP");
+    int chip = 0;
+    if(val != NULL && strcmp(val, "1") == 0){
+        chip = 1;
+    }
+    char *target_addr = "10.0.0.3";
+    val = getenv("TARGET_ADDR");
+    if(val != NULL){
+        target_addr = val;
+    }
+    printf("target addr:%s\n", target_addr);
+    struct udp_env env;
+    open_socket(&env, target_addr, 16384);
+    int retval = exstickge_ad9082(&env, chip, addr, data, EXSTICKGE_WRITE);
 }
 
 

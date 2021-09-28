@@ -1,6 +1,15 @@
 #ifndef __UDPSENDRECV__
 #define __UDPSENDRECV__
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 #define EXSTICKGE_AD9082_SPI_CTRL     (1)
 #define EXSTICKGE_ADRF6780_SPI_CTRL_0 (2)
 #define EXSTICKGE_ADRF6780_SPI_CTRL_1 (3)

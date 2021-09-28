@@ -178,6 +178,9 @@ int32_t adi_ad9081_hal_calc_tx_nco_ftw32(adi_ad9081_device_t *device,
 					 uint64_t dac_freq, int64_t nco_shift,
 					 uint64_t *ftw);
 
+unsigned char AD9082_R(unsigned short addr);
+
+
 #ifdef __cplusplus
 }
 #endif

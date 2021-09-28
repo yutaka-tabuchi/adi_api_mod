@@ -50,17 +50,18 @@
 #include <unistd.h>
 #include "adi_ad9081_config.h"
 #include "adi_ad9081_hal.h"
-#include "axi_gpio.h"
-#include "axi_gpio_spi_i2c.h"
+//#include "axi_gpio.h"
+//#include "axi_gpio_spi_i2c.h"
 
 void HMC7044_W(unsigned short addr,unsigned char data)
 {
-    axi_gpio_i2c_write(addr, data);
+//    axi_gpio_i2c_write(addr, data);
 }
 
 unsigned char HMC7044_R(unsigned short addr)
 {
-    return axi_gpio_i2c_read(addr);
+    //return axi_gpio_i2c_read(addr);
+    return 0;
 }
 
 void HMC7044_setup(){
@@ -139,7 +140,7 @@ void SYNCIN_set(unsigned int sync)
 {
     //unsigned int* sync_gpio=(unsigned int*)0xA0001000;
     //*sync_gpio = sync;
-    axi_gpio_write_once(0xA0020000, sync);
+    //axi_gpio_write_once(0xA0020000, sync);
 }
 
 int main()
@@ -150,12 +151,12 @@ int main()
     uint64_t adc_clk_hz=3200000000;
     uint64_t dev_ref_clk_hz=3200000000;
     
-    axi_gpio_write_once(0xA0010000, 0x0804); // [11]SPI1_CS = 1, [2]SPI0_CS = 1
+    //axi_gpio_write_once(0xA0010000, 0x0804); // [11]SPI1_CS = 1, [2]SPI0_CS = 1
     
-    axi_gpio_write_once(0xA0000000, 0x0000);
-    usleep(1000);
-    axi_gpio_write_once(0xA0000000, 0x0001);
-    usleep(1000);
+    //axi_gpio_write_once(0xA0000000, 0x0000);
+    //usleep(1000);
+    //axi_gpio_write_once(0xA0000000, 0x0001);
+    //usleep(1000);
     
     HMC7044_setup();
 
@@ -163,11 +164,11 @@ int main()
     adi_ad9081_device_reset(&ad9081_dev, AD9081_SOFT_RESET);
     adi_ad9081_device_init(&ad9081_dev);
 
-    printf("CHIP_TYPE     = %02x\n", axi_gpio_spi_read(0x0003));
-    printf("CHIP_GRADE    = %02x\n", axi_gpio_spi_read(0x0006));
-    printf("SPI_REVISION  = %02x\n", axi_gpio_spi_read(0x000b));
-    printf("VENDER_ID_LSB = %02x\n", axi_gpio_spi_read(0x000c));
-    printf("VENDER_ID_MSB = %02x\n", axi_gpio_spi_read(0x000d));
+    printf("CHIP_TYPE     = %02x\n", AD9082_R(0x0003));
+    printf("CHIP_GRADE    = %02x\n", AD9082_R(0x0006));
+    printf("SPI_REVISION  = %02x\n", AD9082_R(0x000b));
+    printf("VENDER_ID_LSB = %02x\n", AD9082_R(0x000c));
+    printf("VENDER_ID_MSB = %02x\n", AD9082_R(0x000d));
 
     adi_ad9081_device_clk_config_set(&ad9081_dev,dac_clk_hz, adc_clk_hz,dev_ref_clk_hz);
 
@@ -207,7 +208,7 @@ int main()
     	usleep(200);
     }
 
-    axi_gpio_write_once(0xA0000000, 0x0000);
+    //axi_gpio_write_once(0xA0000000, 0x0000);
     
     return 0;
 }
