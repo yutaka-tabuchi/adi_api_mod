@@ -136,8 +136,14 @@ void print_usage(char *cmd){
 
 int main(int argc, char **argv)
 {
+    char *target_addr = TARGET_ADDRESS;
+    char *val = getenv("TARGET_ADDR");
+    if(val != NULL){
+        target_addr = val;
+    }
+
     struct udp_env env;
-    open_socket(&env, TARGET_ADDRESS, TARGET_PORT);
+    open_socket(&env, target_addr, TARGET_PORT);
 
     if(argc < 3){
         print_usage(argv[0]);
