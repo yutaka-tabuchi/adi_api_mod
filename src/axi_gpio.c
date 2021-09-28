@@ -46,6 +46,9 @@ void axi_gpio_close(struct axi_gpio_env_t* env)
 void axi_gpio_write(struct axi_gpio_env_t* env, unsigned int offset, int value)
 {
     offset = (offset+4) <= PAGESIZE ? offset : PAGESIZE-4;
+#ifdef AXI_GPIO_MAIN
+    printf("byte offset = %08x\n", offset);
+#endif
     int *ptr = (int*)(env->mm + offset);
     *ptr = value;
 }
@@ -53,6 +56,9 @@ void axi_gpio_write(struct axi_gpio_env_t* env, unsigned int offset, int value)
 int axi_gpio_read(struct axi_gpio_env_t* env, unsigned int offset)
 {
     offset = (offset+4) <= PAGESIZE ? offset : PAGESIZE-4;
+#ifdef AXI_GPIO_MAIN
+    printf("byte offset = %08x\n", offset);
+#endif
     int *ptr = (int*)(env->mm + offset);
     return *ptr;
 }
@@ -87,31 +93,29 @@ int axi_gpio_read_once(unsigned int addr, int *value)
 int main(int argc, char** argv)
 {
     struct axi_gpio_env_t env;
-    if(argc != 2)
+    if(argc < 3)
     {
-        printf("usage: axi_agio addr\n");
+        printf("usage: %s write|read addr [data]\n", argv[0]);
         return 1;
     }
-    int addr = strtoul(argv[1], NULL, 16);
-    
-    int ret = axi_gpio_open(&env, addr);
-    if(ret < 0){
-        return 1;
+    int addr = strtoul(argv[2], NULL, 16);
+    int data = 0;
+    if(strcmp(argv[1], "write") == 0){
+        if(argc < 4){
+            printf("write command requires data\n");
+            return 1;
+        }
+        data = strtoul(argv[3], NULL, 16);
     }
-    
-    for(int i = 0; i < 16; i++){
-        int v = axi_gpio_read(&env, i*4);
-        printf("%08x\n", v);
-    }
-    
-    axi_gpio_close(&env);
 
-    for(int i = 0; i < 16; i++){
+    if(strcmp(argv[1], "write") == 0){
+        axi_gpio_write_once(addr, data);
+        printf("gpio write: [%08x] <= [%08x]\n", addr, data);
+    }else{
         int v;
-        axi_gpio_read_once(addr+i*4, &v);
-        printf("%08x\n", v);
+        axi_gpio_read_once(addr, &v);
+        printf("gpio read: [%08x] => [%08x]\n", addr, v);
     }
-    
     return 0;
 }
 #endif

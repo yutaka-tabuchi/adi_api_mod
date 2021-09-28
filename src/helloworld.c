@@ -73,16 +73,16 @@ void HMC7044_setup(){
     ret=HMC7044_R(0x0003);//0x37
     printf("0x0011=%X\n",ret);
     /*
-GTH_REF  OUT12
-AD9082_REF OUT2
-
-
-PFD1=  R=16 N=16
-PFD2= R=1 N=32  HighBand
-
-TCXO=100MHz CLKIN0
-VCXO=100MHz OSCIN
-     * */
+      GTH_REF  OUT12
+      AD9082_REF OUT2
+      
+      
+      PFD1=  R=16 N=16
+      PFD2= R=1 N=32  HighBand
+      
+      TCXO=100MHz CLKIN0
+      VCXO=100MHz OSCIN
+    */
     //OptinumValue
     HMC7044_W(0x009F ,0x4D);
     HMC7044_W(0x00A0 ,0xDF);
@@ -113,29 +113,27 @@ VCXO=100MHz OSCIN
 
 
 void SetDevinfo(adi_ad9081_device_t *ad9081_dev){
-	int i;
+    int i;
     ad9081_dev->hal_info.sdo=SPI_SDO;
     ad9081_dev->hal_info.msb=SPI_MSB_FIRST;
     ad9081_dev->hal_info.addr_inc=SPI_ADDR_INC_AUTO;
-
+    
     ad9081_dev->serdes_info.des_settings.boost_mask=0x0;
     ad9081_dev->serdes_info.des_settings.invert_mask=0x0;
     for(i=0;i<8;i++){
-    ad9081_dev->serdes_info.des_settings.ctle_filter[i]=0;
-    ad9081_dev->serdes_info.des_settings.lane_mapping[0][i]=i;
-    ad9081_dev->serdes_info.des_settings.lane_mapping[1][i]=i;
+        ad9081_dev->serdes_info.des_settings.ctle_filter[i]=0;
+        ad9081_dev->serdes_info.des_settings.lane_mapping[0][i]=i;
+        ad9081_dev->serdes_info.des_settings.lane_mapping[1][i]=i;
     }
     ad9081_dev->serdes_info.ser_settings.invert_mask=0x00;
     for(i=0;i<8;i++){
-    ad9081_dev->serdes_info.ser_settings.lane_mapping[0][i]=i;
-    ad9081_dev->serdes_info.ser_settings.lane_mapping[1][i]=i;
-    ad9081_dev->serdes_info.ser_settings.lane_settings[i].post_emp_setting=AD9081_SER_POST_EMP_0DB;
-    ad9081_dev->serdes_info.ser_settings.lane_settings[i].pre_emp_setting=AD9081_SER_PRE_EMP_0DB;
-    ad9081_dev->serdes_info.ser_settings.lane_settings[i].swing_setting=AD9081_SER_SWING_500;
+        ad9081_dev->serdes_info.ser_settings.lane_mapping[0][i]=i;
+        ad9081_dev->serdes_info.ser_settings.lane_mapping[1][i]=i;
+        ad9081_dev->serdes_info.ser_settings.lane_settings[i].post_emp_setting=AD9081_SER_POST_EMP_0DB;
+        ad9081_dev->serdes_info.ser_settings.lane_settings[i].pre_emp_setting=AD9081_SER_PRE_EMP_0DB;
+        ad9081_dev->serdes_info.ser_settings.lane_settings[i].swing_setting=AD9081_SER_SWING_500;
     }
-
 }
-
 
 void SYNCIN_set(unsigned int sync)
 {
@@ -151,26 +149,27 @@ int main()
     uint64_t dac_clk_hz=3200000000;
     uint64_t adc_clk_hz=3200000000;
     uint64_t dev_ref_clk_hz=3200000000;
-    //init_platform();
     
-    axi_gpio_write_once(0xA0000000, 0x0001);
     axi_gpio_write_once(0xA0010000, 0x0804); // [11]SPI1_CS = 1, [2]SPI0_CS = 1
     
+    axi_gpio_write_once(0xA0000000, 0x0000);
+    usleep(1000);
+    axi_gpio_write_once(0xA0000000, 0x0001);
+    usleep(1000);
+    
+    HMC7044_setup();
+
+    SetDevinfo(&ad9081_dev);
+    adi_ad9081_device_reset(&ad9081_dev, AD9081_SOFT_RESET);
+    adi_ad9081_device_init(&ad9081_dev);
+
     printf("CHIP_TYPE     = %02x\n", axi_gpio_spi_read(0x0003));
     printf("CHIP_GRADE    = %02x\n", axi_gpio_spi_read(0x0006));
     printf("SPI_REVISION  = %02x\n", axi_gpio_spi_read(0x000b));
     printf("VENDER_ID_LSB = %02x\n", axi_gpio_spi_read(0x000c));
     printf("VENDER_ID_MSB = %02x\n", axi_gpio_spi_read(0x000d));
 
-    HMC7044_setup();
-
-    SetDevinfo(&ad9081_dev);
-    adi_ad9081_device_reset(&ad9081_dev, AD9081_SOFT_RESET);
-    
-    adi_ad9081_device_init(&ad9081_dev);
-
     adi_ad9081_device_clk_config_set(&ad9081_dev,dac_clk_hz, adc_clk_hz,dev_ref_clk_hz);
-
 
     uint8_t rx_cddc_select = AD9081_ADC_CDDC_ALL;
     uint8_t rx_fddc_select = AD9081_ADC_FDDC_ALL;
@@ -208,6 +207,7 @@ int main()
     	usleep(200);
     }
 
-    //cleanup_platform();
+    axi_gpio_write_once(0xA0000000, 0x0000);
+    
     return 0;
 }
