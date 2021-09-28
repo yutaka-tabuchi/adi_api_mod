@@ -1,3 +1,7 @@
 *~
 hello
 *.o
+gpio
+spi_i2c
+udpsendrecv
+
