@@ -170,6 +170,7 @@ int main()
     printf("VENDER_ID_LSB = %02x\n", AD9082_R(0x000c));
     printf("VENDER_ID_MSB = %02x\n", AD9082_R(0x000d));
 
+
     adi_ad9081_device_clk_config_set(&ad9081_dev,dac_clk_hz, adc_clk_hz,dev_ref_clk_hz);
 
     uint8_t rx_cddc_select = AD9081_ADC_CDDC_ALL;

@@ -26,7 +26,7 @@ static void print_return_packet(unsigned char* buf){
 int exstickge_ad9082(struct udp_env* env, int cs, int addr, int value, int mode){
     unsigned char mesg[8];
     unsigned char buf[8];
-    printf("AD9082 %d %d %08x %08x\n", mode, cs, addr, value);
+    //printf("AD9082 %d %d %08x %08x\n", mode, cs, addr, value);
     
     mesg[0] = mode == EXSTICKGE_WRITE ? 0x82 : 0x80;
     mesg[1] = EXSTICKGE_AD9082_SPI_CTRL;
