@@ -1,7 +1,7 @@
-for i in 0
+for i in 0 1 2 3 4 5 6 7 8 9
 do
-TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 00 2612
-TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 00 2610
+TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 00 6612
+TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 00 6610
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 r $i 0 0
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 r $i 0 0
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 4E 0001
@@ -11,7 +11,7 @@ TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 4B 0800
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 4A 0000
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 49 003F
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 48 0000
-TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 47 0081
+TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 47 008D
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 46 C350
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 45 0000
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 44 03E8
@@ -24,7 +24,7 @@ TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 3E 0322
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 3D 00A8
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 3C 03E8
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 3B 0001
-TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 3A 8001
+TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 3A 0401
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 39 0020
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 38 0000
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 37 0000
@@ -36,7 +36,7 @@ TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 32 0000
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 31 4180
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 30 0300
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 2F 0300
-TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 2E 07FD
+TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 2E 07FE
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 2D C8DF
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 2C 1F20
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 2B 0000
@@ -82,7 +82,7 @@ TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 04 1B43
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 03 0642
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 02 0500
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 01 080B
-TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 00 2618
+TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 w $i 00 6618
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 r $i 0 00
 TARGET_ADDR=10.5.0.1 ./udpsendrecv lmx2594 r $i 0 00
 done

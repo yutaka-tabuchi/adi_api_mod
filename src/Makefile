@@ -19,5 +19,5 @@ clean:
 	-rm -f gpio
 	-rm -f spi_i2c
 	-rm -f hello
-	-rm -f updsendrecv
+	-rm -f udpsendrecv
 

@@ -1,7 +1,7 @@
 for i in 0 1 2 3 4 5 6 7 8 9
 do
-./udpsendrecv lmx2594 w $i 00 6612 # R6 [14] VCO_PHASE_SYNC=1
-./udpsendrecv lmx2594 w $i 00 6610
+./udpsendrecv lmx2594 w $i 00 6412 # R6 [14] VCO_PHASE_SYNC=1
+./udpsendrecv lmx2594 w $i 00 6410
 ./udpsendrecv lmx2594 r $i 00 0
 ./udpsendrecv lmx2594 w $i 4E 0001
 ./udpsendrecv lmx2594 w $i 4D 0000
@@ -81,7 +81,7 @@ do
 ./udpsendrecv lmx2594 w $i 03 0642
 ./udpsendrecv lmx2594 w $i 02 0500
 ./udpsendrecv lmx2594 w $i 01 080B
-./udpsendrecv lmx2594 w $i 00 6618
+./udpsendrecv lmx2594 w $i 00 6418
 ./udpsendrecv lmx2594 r $i 00 0
 
 done

@@ -19,6 +19,7 @@
 
 /*============= I N C L U D E S ============*/
 #include "adi_cms_api_common.h"
+#include "udpsendrecv.h"
 
 /*============= D E F I N E S ==============*/
 #define AD9081_ID 0x9081
@@ -609,6 +610,7 @@ typedef struct {
 	adi_ad9081_hal_t hal_info;
 	adi_ad9081_info_t dev_info;
 	adi_ad9081_serdes_settings_t serdes_info;
+        struct udp_env udp_env_info;
 } adi_ad9081_device_t;
 
 /*============= E X P O R T S ==============*/

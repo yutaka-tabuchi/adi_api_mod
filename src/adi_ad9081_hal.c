@@ -21,6 +21,10 @@
 //#include "axi_gpio_spi_i2c.h"
 #include "udpsendrecv.h"
 
+
+unsigned char AD9082_R(struct udp_env *udp_env_info, unsigned short addr);
+void AD9082_W(struct udp_env *udp_env_info, unsigned short addr,unsigned char data);
+
 /*============= C O D E ====================*/
 int32_t adi_ad9081_hal_hw_open(adi_ad9081_device_t *device)
 {
@@ -262,7 +266,7 @@ int32_t adi_ad9081_hal_bf_set(adi_ad9081_device_t *device, uint32_t reg,
 	return API_CMS_ERROR_OK;
 }
 
-unsigned char AD9082_R(unsigned short addr)
+unsigned char AD9082_R(struct udp_env *udp_env_info, unsigned short addr)
 {
     char *val;
     val = getenv("AD9082_CHIP");
@@ -275,12 +279,9 @@ unsigned char AD9082_R(unsigned short addr)
     if(val != NULL){
         target_addr = val;
     }
-    //printf("target addr:%s\n", target_addr);
-    struct udp_env env;
-    open_socket(&env, target_addr, 16384);
-    int retval = exstickge_ad9082(&env, chip, addr, 0, EXSTICKGE_READ);
+    int retval = exstickge_ad9082(udp_env_info, chip, addr, 0, EXSTICKGE_READ);
     //retval = exstickge_ad9082(&env, chip, addr, 0, EXSTICKGE_READ);
-    close_socket(&env);
+    //close_socket(&env);
     
     return (unsigned char)(retval & 0x000000FF);
 }
@@ -303,7 +304,7 @@ int32_t adi_ad9081_hal_reg_get(adi_ad9081_device_t *device, uint32_t reg,
 		//    device->hal_info.spi_xfer(device->hal_info.user_data,
 		//			      in_data, out_data, 0x3))
 		//	return API_CMS_ERROR_SPI_XFER;
-		ret=AD9082_R(reg);
+		ret=AD9082_R(&(device->udp_env_info), reg);
 		*data = ret;//out_data[2];
 		//if (API_CMS_ERROR_OK !=
 		//    AD9081_LOG_SPIR((in_data[0] << 8) + in_data[1],
@@ -386,7 +387,7 @@ int32_t adi_ad9081_hal_reg_get(adi_ad9081_device_t *device, uint32_t reg,
 	return API_CMS_ERROR_OK;
 }
 
-void AD9082_W(unsigned short addr,unsigned char data)
+void AD9082_W(struct udp_env *udp_env_info, unsigned short addr,unsigned char data)
 {
     char *val;
     val = getenv("AD9082_CHIP");
@@ -400,14 +401,12 @@ void AD9082_W(unsigned short addr,unsigned char data)
         target_addr = val;
     }
     //printf("target addr:%s\n", target_addr);
-    struct udp_env env;
-    open_socket(&env, target_addr, 16384);
-    int retval = exstickge_ad9082(&env, chip, addr, data, EXSTICKGE_WRITE);
+    int retval = exstickge_ad9082(udp_env_info, chip, addr, data, EXSTICKGE_WRITE);
     //retval = exstickge_ad9082(&env, chip, addr, data, EXSTICKGE_WRITE);
-    usleep(1000);
-    printf("0x04=%02x\n", AD9082_R(4));
-    unsigned char d = AD9082_R(addr);
-    printf(" addr: %04x, write: %02x, read: %02x\n", addr, data, d);
+    //usleep(1000);
+    //printf("0x04=%02x\n", AD9082_R(4));
+    //unsigned char d = AD9082_R(addr);
+    //printf(" addr: %04x, write: %02x, read: %02x\n", addr, data, d);
 }
 
 
@@ -430,7 +429,7 @@ int32_t adi_ad9081_hal_reg_set(adi_ad9081_device_t *device, uint32_t reg,
 		//if (API_CMS_ERROR_OK !=
 		//    AD9081_LOG_SPIW(reg & 0x3fff, in_data[2]))
 		//	return API_CMS_ERROR_LOG_WRITE;
-		AD9082_W(reg,data);
+		AD9082_W(&(device->udp_env_info), reg, data);
 	} else { /* access extended 32-bit data space */
 		printf("extend -write!! %X %X\n",reg,data);
 		in_data[0] = 0x3D;

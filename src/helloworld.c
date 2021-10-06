@@ -157,14 +157,18 @@ int main()
 
     HMC7044_setup();
 
- 
-
+    char *target_addr = "10.0.0.3";
+    char *val = getenv("TARGET_ADDR");
+    if(val != NULL){
+        target_addr = val;
+    }
+    //printf("target addr:%s\n", target_addr);
+    open_socket(&ad9081_dev.udp_env_info, target_addr, 16384);
 
     SetDevinfo(&ad9081_dev);
     adi_ad9081_hal_reg_get(&ad9081_dev, 0x4, &reg_data);
     printf("0x4=%X\n", reg_data);
     adi_ad9081_device_reset(&ad9081_dev, AD9081_SOFT_RESET);
-    sleep(20);
 /*
     do{
       adi_ad9081_hal_reg_get(&ad9081_dev, 0x4, &reg_data);
@@ -179,7 +183,7 @@ int main()
     adi_ad9081_device_clk_config_set(&ad9081_dev,dac_clk_hz, adc_clk_hz,dev_ref_clk_hz);
         adi_ad9081_hal_reg_get(&ad9081_dev, 0x4, &reg_data);
         printf("0x4=%X\n", reg_data);
-return 0; // dame
+//return 0; // dame
 #endif
 
     /******    DAC-Setup   ********/
