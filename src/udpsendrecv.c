@@ -10,23 +10,12 @@
 #include "udpsendrecv.h"
 
 
-#define UDPSENDRECV_DEBUG
 #ifdef UDPSENDRECV_MAIN
 #define UDPSENDRECV_DEBUG
 #endif
 
-static void print_req_packet(unsigned char* buf){
-#ifdef UDPSENDRECV_DEBUG
-    printf(" mesg:");
-    for(int i = 0; i < 8; i++){
-        printf(" %x", buf[i]);
-    }
-    printf("\n");
-#endif
-}
 static void print_return_packet(unsigned char* buf){
 #ifdef UDPSENDRECV_DEBUG
-    printf(" recv:");
     for(int i = 0; i < 8; i++){
         printf(" %x", buf[i]);
     }
@@ -46,7 +35,6 @@ int exstickge_ad9082(struct udp_env* env, int cs, int addr, int value, int mode)
     *(int*)(&mesg[2]) = htonl((cs << 15) | (addr & 0x7FFF));
     *(short*)(&mesg[6]) = htons(value);
     
-    print_return_packet(mesg);
     sendto(env->sock, mesg, 8, 0, (struct sockaddr *)&(env->addr), sizeof(env->addr));
     recv(env->sock, buf, sizeof(buf), 0);
     print_return_packet(buf);
@@ -62,7 +50,11 @@ int exstickge_adrf6780(struct udp_env* env, int cs, int addr, int value, int mod
     
     mesg[0] = mode == EXSTICKGE_WRITE ? 0x82 : 0x80;
     mesg[1] = cs > 3 ? EXSTICKGE_ADRF6780_SPI_CTRL_1 : EXSTICKGE_ADRF6780_SPI_CTRL_0;
-    *(int*)(&mesg[2]) = htonl(((cs&0x3) << 6) | (addr & 0x3F));
+    if(cs > 3){
+        *(int*)(&mesg[2]) = htonl((((cs-4)&0x3) << 6) | (addr & 0x3F));
+    }else{
+        *(int*)(&mesg[2]) = htonl((((cs-0)&0x3) << 6) | (addr & 0x3F));
+    }
     *(short*)(&mesg[6]) = htons(value);
     
     sendto(env->sock, mesg, 8, 0, (struct sockaddr *)&(env->addr), sizeof(env->addr));
@@ -80,7 +72,11 @@ int exstickge_lmx2594(struct udp_env* env, int cs, int addr, int value, int mode
     
     mesg[0] = mode == EXSTICKGE_WRITE ? 0x82 : 0x80;
     mesg[1] = cs > 4 ? EXSTICKGE_LMX2594_SPI_CTRL_1 : EXSTICKGE_LMX2594_SPI_CTRL_0;
-    *(int*)(&mesg[2]) = htonl(((cs-4) << 7) | (addr & 0x7F));
+    if(cs > 4){
+        *(int*)(&mesg[2]) = htonl(((cs-5) << 7) | (addr & 0x7F));
+    }else{
+        *(int*)(&mesg[2]) = htonl(((cs-0) << 7) | (addr & 0x7F));
+    }
     *(short*)(&mesg[6]) = htons(value);
     
     sendto(env->sock, mesg, 8, 0, (struct sockaddr *)&(env->addr), sizeof(env->addr));
