@@ -10,12 +10,23 @@
 #include "udpsendrecv.h"
 
 
+#define UDPSENDRECV_DEBUG
 #ifdef UDPSENDRECV_MAIN
 #define UDPSENDRECV_DEBUG
 #endif
 
+static void print_req_packet(unsigned char* buf){
+#ifdef UDPSENDRECV_DEBUG
+    printf(" mesg:");
+    for(int i = 0; i < 8; i++){
+        printf(" %x", buf[i]);
+    }
+    printf("\n");
+#endif
+}
 static void print_return_packet(unsigned char* buf){
 #ifdef UDPSENDRECV_DEBUG
+    printf(" recv:");
     for(int i = 0; i < 8; i++){
         printf(" %x", buf[i]);
     }
@@ -26,13 +37,16 @@ static void print_return_packet(unsigned char* buf){
 int exstickge_ad9082(struct udp_env* env, int cs, int addr, int value, int mode){
     unsigned char mesg[8];
     unsigned char buf[8];
-    //printf("AD9082 %d %d %08x %08x\n", mode, cs, addr, value);
+#ifdef UPDSENDRECV_MAIN
+    printf("AD9082 %d %d %08x %08x\n", mode, cs, addr, value);
+#endif
     
     mesg[0] = mode == EXSTICKGE_WRITE ? 0x82 : 0x80;
     mesg[1] = EXSTICKGE_AD9082_SPI_CTRL;
     *(int*)(&mesg[2]) = htonl((cs << 15) | (addr & 0x7FFF));
     *(short*)(&mesg[6]) = htons(value);
     
+    print_return_packet(mesg);
     sendto(env->sock, mesg, 8, 0, (struct sockaddr *)&(env->addr), sizeof(env->addr));
     recv(env->sock, buf, sizeof(buf), 0);
     print_return_packet(buf);
@@ -42,7 +56,9 @@ int exstickge_ad9082(struct udp_env* env, int cs, int addr, int value, int mode)
 int exstickge_adrf6780(struct udp_env* env, int cs, int addr, int value, int mode){
     unsigned char mesg[8];
     unsigned char buf[8];
+#ifdef UPDSENDRECV_MAIN
     printf("ADRF6780 %d %d %08x %08x\n", mode, cs, addr, value);
+#endif
     
     mesg[0] = mode == EXSTICKGE_WRITE ? 0x82 : 0x80;
     mesg[1] = cs > 3 ? EXSTICKGE_ADRF6780_SPI_CTRL_1 : EXSTICKGE_ADRF6780_SPI_CTRL_0;
@@ -58,7 +74,9 @@ int exstickge_adrf6780(struct udp_env* env, int cs, int addr, int value, int mod
 int exstickge_lmx2594(struct udp_env* env, int cs, int addr, int value, int mode){
     unsigned char mesg[8];
     unsigned char buf[8];
+#ifdef UPDSENDRECV_MAIN
     printf("LMX2594 %d %d %08x %08x\n", mode, cs, addr, value);
+#endif
     
     mesg[0] = mode == EXSTICKGE_WRITE ? 0x82 : 0x80;
     mesg[1] = cs > 4 ? EXSTICKGE_LMX2594_SPI_CTRL_1 : EXSTICKGE_LMX2594_SPI_CTRL_0;
@@ -74,7 +92,9 @@ int exstickge_lmx2594(struct udp_env* env, int cs, int addr, int value, int mode
 int exstickge_ad5328(struct udp_env* env, int addr, int value, int mode){
     unsigned char mesg[8];
     unsigned char buf[8];
+#ifdef UPDSENDRECV_MAIN
     printf("AD5328 %d %08x %08x\n", mode, addr, value);
+#endif
     
     mesg[0] = mode == EXSTICKGE_WRITE ? 0x82 : 0x80;
     mesg[1] = EXSTICKGE_AD5328_SPI_CTRL;
@@ -90,7 +110,9 @@ int exstickge_ad5328(struct udp_env* env, int addr, int value, int mode){
 int exstickge_gpio(struct udp_env* env, int value, int mode){
     unsigned char mesg[8];
     unsigned char buf[8];
+#ifdef UPDSENDRECV_MAIN
     printf("GPIO %d %08x\n", mode, value);
+#endif
     
     mesg[0] = mode == EXSTICKGE_WRITE ? 0x82 : 0x80;
     mesg[1] = EXSTICKGE_GPIO;

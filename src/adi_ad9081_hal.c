@@ -50,7 +50,7 @@ int32_t adi_ad9081_hal_delay_us(adi_ad9081_device_t *device, uint32_t us)
 {
 	AD9081_NULL_POINTER_RETURN(device);
 //	AD9081_NULL_POINTER_RETURN(device->hal_info.delay_us);
-	usleep(us);
+	usleep(us*10);
 //	if (API_CMS_ERROR_OK !=
 //	    device->hal_info.delay_us(device->hal_info.user_data, us)) {
 //		return API_CMS_ERROR_DELAY_US;
@@ -279,7 +279,8 @@ unsigned char AD9082_R(unsigned short addr)
     struct udp_env env;
     open_socket(&env, target_addr, 16384);
     int retval = exstickge_ad9082(&env, chip, addr, 0, EXSTICKGE_READ);
-    retval = exstickge_ad9082(&env, chip, addr, 0, EXSTICKGE_READ);
+    //retval = exstickge_ad9082(&env, chip, addr, 0, EXSTICKGE_READ);
+    close_socket(&env);
     
     return (unsigned char)(retval & 0x000000FF);
 }
@@ -402,7 +403,11 @@ void AD9082_W(unsigned short addr,unsigned char data)
     struct udp_env env;
     open_socket(&env, target_addr, 16384);
     int retval = exstickge_ad9082(&env, chip, addr, data, EXSTICKGE_WRITE);
-    retval = exstickge_ad9082(&env, chip, addr, data, EXSTICKGE_WRITE);
+    //retval = exstickge_ad9082(&env, chip, addr, data, EXSTICKGE_WRITE);
+    usleep(1000);
+    printf("0x04=%02x\n", AD9082_R(4));
+    unsigned char d = AD9082_R(addr);
+    printf(" addr: %04x, write: %02x, read: %02x\n", addr, data, d);
 }
 
 

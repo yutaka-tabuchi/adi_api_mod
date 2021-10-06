@@ -46,22 +46,24 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
+
 #include "adi_ad9081_config.h"
 #include "adi_ad9081_hal.h"
-//#include "axi_gpio.h"
-//#include "axi_gpio_spi_i2c.h"
+#define MHZ 1000000
+
 
 void HMC7044_W(unsigned short addr,unsigned char data)
 {
-//    axi_gpio_i2c_write(addr, data);
+
+	
 }
 
 unsigned char HMC7044_R(unsigned short addr)
 {
-    //return axi_gpio_i2c_read(addr);
+
     return 0;
+
 }
 
 void HMC7044_setup(){
@@ -74,16 +76,16 @@ void HMC7044_setup(){
     ret=HMC7044_R(0x0003);//0x37
     printf("0x0011=%X\n",ret);
     /*
-      GTH_REF  OUT12
-      AD9082_REF OUT2
-      
-      
-      PFD1=  R=16 N=16
-      PFD2= R=1 N=32  HighBand
-      
-      TCXO=100MHz CLKIN0
-      VCXO=100MHz OSCIN
-    */
+GTH_REF  OUT12
+AD9082_REF OUT2
+
+
+PFD1=  R=16 N=16
+PFD2= R=1 N=32  HighBand
+
+TCXO=100MHz CLKIN0
+VCXO=100MHz OSCIN
+     * */
     //OptinumValue
     HMC7044_W(0x009F ,0x4D);
     HMC7044_W(0x00A0 ,0xDF);
@@ -93,7 +95,7 @@ void HMC7044_setup(){
     //PLL2-Setup
     HMC7044_W(0x0003 ,0x2F);
     HMC7044_W(0x0033 ,0x01);
-    HMC7044_W(0x0035 ,0x20);
+    HMC7044_W(0x0035 ,0x20);  // N
     //HMC7044_W(0x0037 ,0x04);  //CP-current
     //PLL1-Setup
     HMC7044_W(0x0014 ,0x00);
@@ -104,9 +106,9 @@ void HMC7044_setup(){
     HMC7044_W(0x0029 ,0x00);
     //HMC7044_W(0x001A ,0x01);  //CP-current
     //Output2-Setup
-    HMC7044_W(0x00DD ,0x01);
+    HMC7044_W(0x00DD ,0x01);  //DAC-CLK
     //Output8-Setup
-    HMC7044_W(0x0119 ,0x08);
+    HMC7044_W(0x0119 ,0x08);  //450MHz
     //Restart
     HMC7044_W(0x0001 ,0x02);
     HMC7044_W(0x0001 ,0x00);
@@ -114,102 +116,140 @@ void HMC7044_setup(){
 
 
 void SetDevinfo(adi_ad9081_device_t *ad9081_dev){
-    int i;
+	int i;
     ad9081_dev->hal_info.sdo=SPI_SDO;
     ad9081_dev->hal_info.msb=SPI_MSB_FIRST;
     ad9081_dev->hal_info.addr_inc=SPI_ADDR_INC_AUTO;
-    
-    ad9081_dev->serdes_info.des_settings.boost_mask=0x0;
-    ad9081_dev->serdes_info.des_settings.invert_mask=0x0;
+
+    ad9081_dev->serdes_info.des_settings.boost_mask=0xFF;
+    ad9081_dev->serdes_info.des_settings.invert_mask=0x00;
     for(i=0;i<8;i++){
-        ad9081_dev->serdes_info.des_settings.ctle_filter[i]=0;
-        ad9081_dev->serdes_info.des_settings.lane_mapping[0][i]=i;
-        ad9081_dev->serdes_info.des_settings.lane_mapping[1][i]=i;
+    ad9081_dev->serdes_info.des_settings.ctle_filter[i]=0;
+    ad9081_dev->serdes_info.des_settings.lane_mapping[0][i]=i;
+    ad9081_dev->serdes_info.des_settings.lane_mapping[1][i]=i;
     }
-    ad9081_dev->serdes_info.ser_settings.invert_mask=0x00;
+    ad9081_dev->serdes_info.ser_settings.invert_mask=0xFF;
     for(i=0;i<8;i++){
-        ad9081_dev->serdes_info.ser_settings.lane_mapping[0][i]=i;
-        ad9081_dev->serdes_info.ser_settings.lane_mapping[1][i]=i;
-        ad9081_dev->serdes_info.ser_settings.lane_settings[i].post_emp_setting=AD9081_SER_POST_EMP_0DB;
-        ad9081_dev->serdes_info.ser_settings.lane_settings[i].pre_emp_setting=AD9081_SER_PRE_EMP_0DB;
-        ad9081_dev->serdes_info.ser_settings.lane_settings[i].swing_setting=AD9081_SER_SWING_500;
+    ad9081_dev->serdes_info.ser_settings.lane_mapping[0][i]=i;
+    ad9081_dev->serdes_info.ser_settings.lane_mapping[1][i]=i;
+    ad9081_dev->serdes_info.ser_settings.lane_settings[i].post_emp_setting=AD9081_SER_POST_EMP_0DB;
+    ad9081_dev->serdes_info.ser_settings.lane_settings[i].pre_emp_setting=AD9081_SER_PRE_EMP_6DB;
+    ad9081_dev->serdes_info.ser_settings.lane_settings[i].swing_setting=AD9081_SER_SWING_750;
     }
+
 }
 
-void SYNCIN_set(unsigned int sync)
-{
-    //unsigned int* sync_gpio=(unsigned int*)0xA0001000;
-    //*sync_gpio = sync;
-    //axi_gpio_write_once(0xA0020000, sync);
-}
 
 int main()
 {
-    int i;
-    adi_ad9081_device_t ad9081_dev;
-    uint64_t dac_clk_hz=3200000000;
-    uint64_t adc_clk_hz=3200000000;
-    uint64_t dev_ref_clk_hz=3200000000;
-    
-    //axi_gpio_write_once(0xA0010000, 0x0804); // [11]SPI1_CS = 1, [2]SPI0_CS = 1
-    
-    //axi_gpio_write_once(0xA0000000, 0x0000);
-    //usleep(1000);
-    //axi_gpio_write_once(0xA0000000, 0x0001);
-    //usleep(1000);
-    
+
+ 
+       uint8_t reg_data;
+	int i;
+	adi_ad9081_device_t ad9081_dev;
+	uint64_t dac_clk_hz=3200000000;
+	uint64_t adc_clk_hz=3200000000;
+//	uint64_t dac_clk_hz=12000000000;
+//	uint64_t adc_clk_hz= 3000000000;
+	uint64_t dev_ref_clk_hz=3200000000;
+
+    printf("Hello World \n\r");
+
     HMC7044_setup();
 
+ 
+
+
     SetDevinfo(&ad9081_dev);
+    adi_ad9081_hal_reg_get(&ad9081_dev, 0x4, &reg_data);
+    printf("0x4=%X\n", reg_data);
     adi_ad9081_device_reset(&ad9081_dev, AD9081_SOFT_RESET);
+    sleep(20);
+/*
+    do{
+      adi_ad9081_hal_reg_get(&ad9081_dev, 0x4, &reg_data);
+      printf("0x4=%X\n", reg_data);
+      sleep(1);
+    }while(reg_data != 0x82);
+*/
+
     adi_ad9081_device_init(&ad9081_dev);
-
-    printf("CHIP_TYPE     = %02x\n", AD9082_R(0x0003));
-    printf("CHIP_GRADE    = %02x\n", AD9082_R(0x0006));
-    printf("SPI_REVISION  = %02x\n", AD9082_R(0x000b));
-    printf("VENDER_ID_LSB = %02x\n", AD9082_R(0x000c));
-    printf("VENDER_ID_MSB = %02x\n", AD9082_R(0x000d));
-
-
+//return 0; // ok
+#if 0
     adi_ad9081_device_clk_config_set(&ad9081_dev,dac_clk_hz, adc_clk_hz,dev_ref_clk_hz);
+        adi_ad9081_hal_reg_get(&ad9081_dev, 0x4, &reg_data);
+        printf("0x4=%X\n", reg_data);
+return 0; // dame
+#endif
 
+    /******    DAC-Setup   ********/
+   /* uint8_t tx_main_interp = 12;
+    uint8_t tx_chan_interp =2;
+    uint8_t tx_dac_chan[] = {0x01,0x01,0x01,0x01};
+    int64_t tx_main_shift[] = {100*MHZ,100 * MHZ,100* MHZ,100 * MHZ };
+    int64_t tx_chan_shift[] = {10 * MHZ,10 * MHZ,10 * MHZ,10 * MHZ,10 * MHZ,10 * MHZ,10 * MHZ,10 * MHZ };
+    adi_cms_jesd_param_t jrx_param[2] =
+        //  L  F  M  S HD   K   N  NP CF CS DID BID LID SCL SCR DUAL  B/C  ID  C2R S
+    { { 1, 4, 2, 1, 0, 64, 16, 16, 0, 0, 0,  0, 0,   0,  0, 0,    2,   2,   0,  0 },
+      { 1, 4, 2, 1, 0, 64, 16, 16, 0, 0, 0,  0, 0,   0,  0, 0,    2,   2,   0,  0 } };
+
+    adi_ad9081_device_startup_tx(&ad9081_dev, tx_main_interp, tx_chan_interp,
+    tx_dac_chan, tx_main_shift, tx_chan_shift, jrx_param);
+
+    for(i=0;i<8;i++)
+    	adi_ad9081_jesd_rx_lane_xbar_set(&ad9081_dev, AD9081_LINK_0,3, i);
+
+    adi_ad9081_hal_reg_set(&ad9081_dev, 0x401,0xF7); //lane3=0xF7
+    adi_ad9081_jesd_rx_link_enable_set(&ad9081_dev, AD9081_LINK_0, 1);*/
+
+
+    /******    ADC-Setup   ********/
     uint8_t rx_cddc_select = AD9081_ADC_CDDC_ALL;
     uint8_t rx_fddc_select = AD9081_ADC_FDDC_ALL;
     int64_t cdcc_shift[]={0,250000000,500000000,750000000};
     int64_t fdcc_shift[]={0,100000000,0,100000000,0,100000000,0,100000000};
-    uint8_t cddc_dcm[]={AD9081_CDDC_DCM_2,AD9081_CDDC_DCM_2,AD9081_CDDC_DCM_2,AD9081_CDDC_DCM_2};
-    uint8_t fddc_dcm[]={AD9081_FDDC_DCM_4,AD9081_FDDC_DCM_4,AD9081_FDDC_DCM_4,AD9081_FDDC_DCM_4,AD9081_FDDC_DCM_4,AD9081_FDDC_DCM_4,AD9081_FDDC_DCM_4,AD9081_FDDC_DCM_4,};
+   // uint8_t cddc_dcm[]={AD9081_CDDC_DCM_2,AD9081_CDDC_DCM_2,AD9081_CDDC_DCM_2,AD9081_CDDC_DCM_2};
+    uint8_t cddc_dcm[] = { AD9081_CDDC_DCM_1,AD9081_CDDC_DCM_1,AD9081_CDDC_DCM_1,AD9081_CDDC_DCM_1 };
+    uint8_t fddc_dcm[]={AD9081_FDDC_DCM_4,AD9081_FDDC_DCM_4,AD9081_FDDC_DCM_4,AD9081_FDDC_DCM_4,AD9081_FDDC_DCM_4,AD9081_FDDC_DCM_4,AD9081_FDDC_DCM_4,AD9081_FDDC_DCM_4};
     uint8_t rx_cddc_c2r[]={0,0,0,0};
     uint8_t rx_fddc_c2r[]={0,0,0,0,0,0,0,0};
 
     adi_cms_jesd_param_t jtx_param[2] =
     //  L  F  M  S HD   K   N  NP CF CS DID BID LID SCL SCR DUAL  B/C  ID  C2R S
-    { { 8, 2, 8, 1, 0, 32, 16, 16, 0, 0, 0,  0, 0,   0,  0, 0,    1,   10, 0,  0 },
-      { 8, 2, 8, 1, 0, 32, 16, 16, 0, 0, 0,  0, 0,   0,  0, 0,    1,   10, 0,  0 } };
+    { { 8, 2, 8, 1, 0, 128,16, 16, 0, 0, 0,  0, 0,   0,  0, 0,    2,   10, 0,  0 },
+      { 8, 2, 8, 1, 0, 128,16, 16, 0, 0, 0,  0, 0,   0,  0, 0,    2,   10, 0,  0 } };
     adi_ad9081_jtx_conv_sel_t jesd_conv_sel[2]={{0,1,2,3,4,5,6,7,0,1,2,3,4,5,6,7},{0,1,2,3,4,5,6,7,0,1,2,3,4,5,6,7}};
 
     adi_ad9081_device_startup_rx(&ad9081_dev, rx_cddc_select, rx_fddc_select,cdcc_shift,fdcc_shift,
     		cddc_dcm, fddc_dcm, rx_cddc_c2r, rx_fddc_c2r, jtx_param,jesd_conv_sel);
-
+    		usleep(1000000);
+        adi_ad9081_hal_reg_get(&ad9081_dev, 0x4, &reg_data);
+        printf("0x4=%X\n", reg_data);
+    		usleep(1000000);
     uint8_t lane[]={0,1,2,3,4,5,6,7};
     adi_ad9081_jesd_tx_lanes_xbar_set(&ad9081_dev, AD9081_LINK_0, lane);
+    		usleep(1000000);
+        adi_ad9081_hal_reg_get(&ad9081_dev, 0x4, &reg_data);
+        printf("0x4=%X\n", reg_data);
+    		usleep(1000000);
     uint8_t lid[]={0,0,0,0,0,0,0,0};
     adi_ad9081_jesd_tx_lids_cfg_set(&ad9081_dev, AD9081_LINK_0, lid);
-
     adi_ad9081_jesd_tx_link_enable_set(&ad9081_dev, AD9081_LINK_0, 1);
-
-	SYNCIN_set(0x10);//GTH-reset
-	sleep(1);
-	SYNCIN_set(0x00);//GTH-reset-release
-	sleep(1);
-    for(i=0;i<100;i++){
-    	SYNCIN_set(0x0A);
-    	usleep(100);
-    	SYNCIN_set(0x05);
-    	usleep(200);
+    
+    /******    GTH - reset   ********/
+ 
+    for(i=0;i<4;i++){
+        adi_ad9081_hal_reg_set(&ad9081_dev, 0x5BB, 0x00);
+        adi_ad9081_hal_reg_set(&ad9081_dev, 0x5BB, 0x01);
+    	adi_ad9081_hal_reg_get(&ad9081_dev,0x55E,&reg_data);
+    	printf("0x55E=%X\n",reg_data);
+        adi_ad9081_hal_reg_get(&ad9081_dev, 0x5BB, &reg_data);
+        printf("0x5BB=%X\n", reg_data);
+        
+        adi_ad9081_hal_reg_get(&ad9081_dev, 0x62E, &reg_data);
+        printf("0x62E=%X\n", reg_data);
     }
 
-    //axi_gpio_write_once(0xA0000000, 0x0000);
-    
+
     return 0;
 }
