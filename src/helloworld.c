@@ -175,7 +175,7 @@ int main()
 
     adi_ad9081_device_init(&ad9081_dev);
 //return 0; // ok
-#if 0
+#if 1
     adi_ad9081_device_clk_config_set(&ad9081_dev,dac_clk_hz, adc_clk_hz,dev_ref_clk_hz);
         adi_ad9081_hal_reg_get(&ad9081_dev, 0x4, &reg_data);
         printf("0x4=%X\n", reg_data);
