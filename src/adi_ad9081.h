@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0
 /*!
  * @brief     API header file
  *            This file contains all the publicly exposed methods and data
@@ -27,6 +26,13 @@
 #define AD9081_DAC_CLK_FREQ_HZ_MAX 12600000000ULL
 #define AD9081_ADC_CLK_FREQ_HZ_MIN 1425000000ULL
 #define AD9081_ADC_CLK_FREQ_HZ_MAX 4200000000ULL
+#ifdef AD9209
+#define AD9081_ID 0x9209
+#define AD9081_DAC_CLK_FREQ_HZ_MIN 2850000000ULL
+#define AD9081_DAC_CLK_FREQ_HZ_MAX 12600000000ULL
+#define AD9081_ADC_CLK_FREQ_HZ_MIN 1425000000ULL
+#define AD9081_ADC_CLK_FREQ_HZ_MAX 6300000000ULL
+#endif
 #define AD9081_REF_CLK_FREQ_HZ_MIN 100000000ULL
 #define AD9081_REF_CLK_FREQ_HZ_MAX 2000000000ULL
 
@@ -569,7 +575,7 @@ typedef struct {
  * @brief Device Hardware Abstract Layer Structure
  */
 typedef struct {
-	//void *user_data; /*!< Pointer to connect customer data related to this device */
+	void *user_data; /*!< Pointer to connect customer data related to this device */
 
 	adi_cms_spi_sdo_config_e
 		sdo; /*!< SPI interface 3/4 wire mode configuration */
@@ -578,19 +584,19 @@ typedef struct {
 	adi_cms_spi_addr_inc_e
 		addr_inc; /*!< SPI interface address increment configuration */
 
-//	adi_spi_xfer_t
-//	spi_xfer; /*!< Function pointer to hal spi access function */
-//	adi_delay_us_t delay_us; /*!< Function pointer to hal delay function */
-//	adi_hw_open_t
-//		hw_open; /*!< Function pointer to hal initialization function */
-//	adi_hw_close_t
-//		hw_close; /*!< Function pointer to hal de-initialization function */
-//	adi_log_write_t
-//		log_write; /*!< Function pointer to hal log write function */
-//	adi_tx_en_pin_ctrl_t
-//		tx_en_pin_ctrl; /*!< Function pointer to hal tx_enable pin control function */
-//	adi_reset_pin_ctrl_t
-//		reset_pin_ctrl; /*!< Function pointer to hal reset# pin control function */
+	adi_spi_xfer_t
+		spi_xfer; /*!< Function pointer to hal spi access function */
+	adi_delay_us_t delay_us; /*!< Function pointer to hal delay function */
+	adi_hw_open_t
+		hw_open; /*!< Function pointer to hal initialization function */
+	adi_hw_close_t
+		hw_close; /*!< Function pointer to hal de-initialization function */
+	adi_log_write_t
+		log_write; /*!< Function pointer to hal log write function */
+	adi_tx_en_pin_ctrl_t
+		tx_en_pin_ctrl; /*!< Function pointer to hal tx_enable pin control function */
+	adi_reset_pin_ctrl_t
+		reset_pin_ctrl; /*!< Function pointer to hal reset# pin control function */
 } adi_ad9081_hal_t;
 
 /*!
@@ -610,7 +616,7 @@ typedef struct {
 	adi_ad9081_hal_t hal_info;
 	adi_ad9081_info_t dev_info;
 	adi_ad9081_serdes_settings_t serdes_info;
-        struct udp_env udp_env_info;
+	struct udp_env udp_env_info;
 } adi_ad9081_device_t;
 
 /*============= E X P O R T S ==============*/
@@ -3173,7 +3179,7 @@ adi_ad9081_adc_pfir_coeffs_set(adi_ad9081_device_t *device,
  *                            bit 2: real_cross_i load, bit 3: real_cross_q load
  *                            bit 4: complex load
  * @param  coeffs         Coefficient value array pointer
- * @param  coeffs_num     Coefficient value array(coeffs) size
+ * @param  coeffs_size    Coefficient value array(coeffs) size
  *
  * @return API_CMS_ERROR_OK                     API Completed Successfully
  * @return <0                                   Failed. @see adi_cms_error_e for details.
@@ -3185,7 +3191,7 @@ int32_t adi_ad9081_adc_pfir_config_set(
 	adi_ad9081_adc_pfir_q_mode_e q_mode, adi_ad9081_adc_pfir_gain_e ix_gain,
 	adi_ad9081_adc_pfir_gain_e iy_gain, adi_ad9081_adc_pfir_gain_e qx_gain,
 	adi_ad9081_adc_pfir_gain_e qy_gain, uint8_t coeff_load_sel,
-	uint16_t *coeffs, uint8_t coeffs_num);
+	uint16_t *coeffs, uint8_t coeffs_size);
 
 /**
  * @brief  Set Fine DDC Samples Status Selection

@@ -280,8 +280,6 @@ unsigned char AD9082_R(struct udp_env *udp_env_info, unsigned short addr)
         target_addr = val;
     }
     int retval = exstickge_ad9082(udp_env_info, chip, addr, 0, EXSTICKGE_READ);
-    //retval = exstickge_ad9082(&env, chip, addr, 0, EXSTICKGE_READ);
-    //close_socket(&env);
     
     return (unsigned char)(retval & 0x000000FF);
 }

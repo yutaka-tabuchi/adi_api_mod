@@ -46,12 +46,14 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include "adi_ad9081_config.h"
 #include "adi_ad9081_hal.h"
 #define MHZ 1000000
 
+#include "udpsendrecv.h"
 
 void SetDevinfo(adi_ad9081_device_t *ad9081_dev){
     int i;

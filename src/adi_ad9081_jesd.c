@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0
 /*!
  * @brief     APIs for JESD configuration and control
  *
@@ -2562,20 +2561,13 @@ int32_t adi_ad9081_jesd_tx_link_enable_set(adi_ad9081_device_t *device,
 	AD9081_NULL_POINTER_RETURN(device);
 	AD9081_LOG_FUNC();
 	AD9081_INVALID_PARAM_RETURN(link_en > 1);
-	uint8_t regdata;
 
 	if ((links & AD9081_LINK_0) > 0) {
 		err = adi_ad9081_jesd_tx_link_select_set(device, AD9081_LINK_0);
 		AD9081_ERROR_RETURN(err);
-		printf("REG_JTX_CORE_13_ADDR=%X\n",REG_JTX_CORE_13_ADDR);
-		printf("link_en=%d\n",link_en);
-		adi_ad9081_hal_reg_get(device,0x62e,&regdata);
-		printf("0x62e adi_ad9081_jesd_tx_link_enable_set=%d\n",regdata);
 		err = adi_ad9081_hal_bf_set(device, REG_JTX_CORE_13_ADDR,
 					    BF_JTX_LINK_EN_INFO,
 					    link_en); /* paged */
-		adi_ad9081_hal_reg_get(device,0x62e,&regdata);
-		printf("0x62e adi_ad9081_jesd_tx_link_enable_set=%d\n",regdata);
 		AD9081_ERROR_RETURN(err);
 	}
 	if ((links & AD9081_LINK_1) > 0) {

@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0
 /*!
  * @brief     SPI Register Definition Header File, automatically generated file at 1/20/2020 6:24:30 AM.
  *
