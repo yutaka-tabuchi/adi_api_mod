@@ -31,6 +31,8 @@ int32_t adi_ad9081_hal_hw_close(adi_ad9081_device_t *device);
 int32_t adi_ad9081_hal_delay_us(adi_ad9081_device_t *device, uint32_t us);
 int32_t adi_ad9081_hal_reset_pin_ctrl(adi_ad9081_device_t *device,
 				      uint8_t enable);
+int32_t adi_ad9081_hal_sysref_ctrl(adi_ad9081_device_t *device,
+				      uint8_t enable);
 int32_t adi_ad9081_hal_log_write(adi_ad9081_device_t *device,
 				 adi_cms_log_type_e type, const char *comment,
 				 ...);
@@ -177,7 +179,6 @@ int32_t adi_ad9081_hal_calc_rx_nco_ftw32(adi_ad9081_device_t *device,
 int32_t adi_ad9081_hal_calc_tx_nco_ftw32(adi_ad9081_device_t *device,
 					 uint64_t dac_freq, int64_t nco_shift,
 					 uint64_t *ftw);
-
 
 #ifdef __cplusplus
 }

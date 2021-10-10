@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0
 /*!
  * @brief     device configuration header
  *
@@ -39,7 +40,16 @@
 #define __FUNCTION_NAME__ __FUNCTION__
 #endif
 
-#define AD9081_API_REV 0x00010007
+#define AD9081_API_REV 0x00010101
+#define AD9081_PLL_LOCK_WAIT 20000
+#define AD9081_JESD_CAL_BOOT_WAIT 250000
+#define AD9081_JESD_MAN_CAL_WAIT 200000
+#define AD9081_JESD_RX_204C_CAL_WAIT 500000
+#define AD9081_JESD_FG_CAL_WAIT 200000
+#define AD9081_SERDES_RST_WAIT 50000
+#define AD9081_DESER_MODE_204B_BR_TRESH 8000000000ULL
+#define AD9081_DESER_MODE_204C_BR_TRESH 16000000000ULL
+#define AD9081_IL_CTLE_UPPER_DB_THRESH 10
 
 /* var error report */
 #define AD9081_MSG_REPORT(var, comment)                                        \
@@ -123,6 +133,7 @@ int32_t adi_ad9081_device_clk_pll_div_set(adi_ad9081_device_t *device,
 					  uint8_t pll_div, uint8_t fb_div);
 int32_t adi_ad9081_device_clk_pll_startup(adi_ad9081_device_t *device,
 					  uint64_t dac_clk_hz,
+					  uint64_t adc_clk_hz,
 					  uint64_t ref_clk_hz);
 int32_t adi_ad9081_device_clk_up_div_set(adi_ad9081_device_t *device,
 					 uint64_t dac_clk_hz);
@@ -196,11 +207,6 @@ int32_t adi_ad9081_adc_ddc_coarse_dither_en_set(adi_ad9081_device_t *device,
 						uint8_t cddcs,
 						uint8_t amp_dither_en,
 						uint8_t phase_dither_en);
-int32_t adi_ad9081_adc_ddc_coarse_chip_xfer_set(adi_ad9081_device_t *device,
-						uint8_t cddcs);
-int32_t
-adi_ad9081_adc_ddc_coarse_chip_xfer_status_get(adi_ad9081_device_t *device,
-					       uint8_t cddcs, uint8_t *status);
 int32_t adi_ad9081_adc_ddc_coarse_psw_set(adi_ad9081_device_t *device,
 					  uint8_t cddcs, uint64_t psw);
 int32_t adi_ad9081_adc_ddc_fine_trig_nco_reset_enable_set(
@@ -216,8 +222,6 @@ int32_t adi_ad9081_adc_ddc_fine_dither_en_set(adi_ad9081_device_t *device,
 					      uint8_t fddcs,
 					      uint8_t amp_dither_en,
 					      uint8_t phase_dither_en);
-int32_t adi_ad9081_adc_ddc_fine_chip_xfer_set(adi_ad9081_device_t *device,
-					      uint8_t fddcs);
 
 int32_t adi_ad9081_jesd_tx_conv_mask_set(adi_ad9081_device_t *device,
 					 adi_ad9081_jesd_link_select_e links,
@@ -229,8 +233,6 @@ int32_t adi_ad9081_jesd_tx_pll_status_get(adi_ad9081_device_t *device,
 					  uint8_t *pll_locked);
 int32_t adi_ad9081_jesd_rx_startup_des(adi_ad9081_device_t *device,
 				       adi_ad9081_deser_mode_e deser_mode);
-int32_t adi_ad9081_jesd_pll_lock_status_get(adi_ad9081_device_t *device,
-					    uint8_t *locked);
 uint16_t adi_ad9081_jesd_find_dformat_out_nc(
 	adi_ad9081_jtx_conv_sel_t const *jesd_conv_sel, uint8_t jesd_m);
 uint8_t
