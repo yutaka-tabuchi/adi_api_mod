@@ -17,8 +17,6 @@
 #include <unistd.h>
 #include <stdio.h>
 #include "adi_ad9081_hal.h"
-//#include "axi_gpio.h"
-//#include "axi_gpio_spi_i2c.h"
 #include "udpsendrecv.h"
 
 
@@ -68,12 +66,12 @@ int32_t adi_ad9081_hal_reset_pin_ctrl(adi_ad9081_device_t *device,
 {
 	AD9081_NULL_POINTER_RETURN(device);
 	//AD9081_NULL_POINTER_RETURN(device->hal_info.reset_pin_ctrl);
+#if 0 // HW reset is not used in QuBE
 	//unsigned int* gpio=(unsigned int*)0xA0000000;
         //
 	//if(enable>0)*gpio = 0x29;
 	//else *gpio = 0x28;
 
-#if 0 // GPIO is not used in QuBE
         if(enable > 0){
             axi_gpio_write_once(0xA0000000, 1);
         }else{
