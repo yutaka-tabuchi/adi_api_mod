@@ -1,4 +1,4 @@
-for i in 0 1 2 3 4 5 6 7 8 9
+for i in 8 9
 do
 ./udpsendrecv lmx2594 w $i 00 6412 # R6 [14] VCO_PHASE_SYNC=1
 ./udpsendrecv lmx2594 w $i 00 6410
@@ -7,9 +7,9 @@ do
 ./udpsendrecv lmx2594 w $i 4D 0000
 ./udpsendrecv lmx2594 w $i 4C 000C
 ./udpsendrecv lmx2594 w $i 4B 0840
-./udpsendrecv lmx2594 w $i 4A F000
+./udpsendrecv lmx2594 w $i 4A 0000 # R74 [15:2] SYSREF_PULSE_COUNT=0
 ./udpsendrecv lmx2594 w $i 49 003F
-./udpsendrecv lmx2594 w $i 48 001F
+./udpsendrecv lmx2594 w $i 48 001F # R72 [10:0] SYSREF_DIV
 ./udpsendrecv lmx2594 w $i 47 008D # R71 [7:5]SYSREF_DIV_PRE=4='Divided by 4', [3]SYSREF_EN=1, [2]SYSREF_REPEAT=1
 ./udpsendrecv lmx2594 w $i 46 C350
 ./udpsendrecv lmx2594 w $i 45 0000
@@ -45,7 +45,7 @@ do
 ./udpsendrecv lmx2594 w $i 27 0001
 ./udpsendrecv lmx2594 w $i 26 0000
 ./udpsendrecv lmx2594 w $i 25 0204
-./udpsendrecv lmx2594 w $i 24 0078
+./udpsendrecv lmx2594 w $i 24 001e # N
 ./udpsendrecv lmx2594 w $i 23 0004
 ./udpsendrecv lmx2594 w $i 22 0000
 ./udpsendrecv lmx2594 w $i 21 1E21
@@ -83,5 +83,11 @@ do
 ./udpsendrecv lmx2594 w $i 01 080B
 ./udpsendrecv lmx2594 w $i 00 6418
 ./udpsendrecv lmx2594 r $i 00 0
-
+./udpsendrecv lmx2594 w $i 22 0000 # R34 [2:0] PLL_N[18:16]
+./udpsendrecv lmx2594 w $i 24 001e # R36 PLL_N[15:0]
+./udpsendrecv lmx2594 w $i 26 0000 # R38 PLL_DEN[31:16]
+./udpsendrecv lmx2594 w $i 27 0064 # R39 PLL_DEN[15:0]
+./udpsendrecv lmx2594 w $i 2A 0000 # R42 PLL_NUM[31:16]
+./udpsendrecv lmx2594 w $i 2B 0000 # R43 PLL_NUM[15:0]
+./udpsendrecv lmx2594 w $i 00 6418
 done

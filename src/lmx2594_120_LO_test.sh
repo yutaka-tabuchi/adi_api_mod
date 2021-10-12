@@ -1,17 +1,16 @@
-for i in 0 1 2 3 4 5 6 7 8 9
+for i in 0 1 2 3 4 5 6 7
 do
-./udpsendrecv lmx2594 w $i 00 6612
-./udpsendrecv lmx2594 w $i 00 6610
-./udpsendrecv lmx2594 r $i 0 0
-./udpsendrecv lmx2594 r $i 0 0
+./udpsendrecv lmx2594 w $i 00 6412 # R6 [14] VCO_PHASE_SYNC=1, [9]OUT_MUTE=1
+./udpsendrecv lmx2594 w $i 00 6410
+./udpsendrecv lmx2594 r $i 00 0
 ./udpsendrecv lmx2594 w $i 4E 0001
 ./udpsendrecv lmx2594 w $i 4D 0000
 ./udpsendrecv lmx2594 w $i 4C 000C
-./udpsendrecv lmx2594 w $i 4B 0800
-./udpsendrecv lmx2594 w $i 4A 0000
+./udpsendrecv lmx2594 w $i 4B 0840
+./udpsendrecv lmx2594 w $i 4A 0000 # R74 [15:2] SYSREF_PULSE_COUNT=0
 ./udpsendrecv lmx2594 w $i 49 003F
-./udpsendrecv lmx2594 w $i 48 0000
-./udpsendrecv lmx2594 w $i 47 008D
+./udpsendrecv lmx2594 w $i 48 001F # R72 [10:0] SYSREF_DIV
+./udpsendrecv lmx2594 w $i 47 0081 # R71 [7:5]SYSREF_DIV_PRE=4='Divided by 4', [3]SYSREF_EN=0, [2]SYSREF_REPEAT=0
 ./udpsendrecv lmx2594 w $i 46 C350
 ./udpsendrecv lmx2594 w $i 45 0000
 ./udpsendrecv lmx2594 w $i 44 03E8
@@ -24,7 +23,7 @@ do
 ./udpsendrecv lmx2594 w $i 3D 00A8
 ./udpsendrecv lmx2594 w $i 3C 03E8
 ./udpsendrecv lmx2594 w $i 3B 0001
-./udpsendrecv lmx2594 w $i 3A 0401
+./udpsendrecv lmx2594 w $i 3A 0401 # R58 [15]IGNORE=0, [14]HYST=0, [13:12]INPIN_LVL=0=Vin/4, [11:9]FMT=2='sysrefreq=LVDS'
 ./udpsendrecv lmx2594 w $i 39 0020
 ./udpsendrecv lmx2594 w $i 38 0000
 ./udpsendrecv lmx2594 w $i 37 0000
@@ -36,9 +35,9 @@ do
 ./udpsendrecv lmx2594 w $i 31 4180
 ./udpsendrecv lmx2594 w $i 30 0300
 ./udpsendrecv lmx2594 w $i 2F 0300
-./udpsendrecv lmx2594 w $i 2E 07FE
-./udpsendrecv lmx2594 w $i 2D C8DF
-./udpsendrecv lmx2594 w $i 2C 1F20
+./udpsendrecv lmx2594 w $i 2E 07FD # R46 [1:0] OUTB_MUX=1(=VCO)
+./udpsendrecv lmx2594 w $i 2D C8DF # R45 [5:0] OUTB_PWR=1F
+./udpsendrecv lmx2594 w $i 2C 3220 # R44
 ./udpsendrecv lmx2594 w $i 2B 0000
 ./udpsendrecv lmx2594 w $i 2A 0000
 ./udpsendrecv lmx2594 w $i 29 0000
@@ -46,12 +45,12 @@ do
 ./udpsendrecv lmx2594 w $i 27 0001
 ./udpsendrecv lmx2594 w $i 26 0000
 ./udpsendrecv lmx2594 w $i 25 0204
-./udpsendrecv lmx2594 w $i 24 0060
+./udpsendrecv lmx2594 w $i 24 0078
 ./udpsendrecv lmx2594 w $i 23 0004
 ./udpsendrecv lmx2594 w $i 22 0000
 ./udpsendrecv lmx2594 w $i 21 1E21
 ./udpsendrecv lmx2594 w $i 20 0393
-./udpsendrecv lmx2594 w $i 1F 03EC
+./udpsendrecv lmx2594 w $i 1F 43EC
 ./udpsendrecv lmx2594 w $i 1E 318C
 ./udpsendrecv lmx2594 w $i 1D 318C
 ./udpsendrecv lmx2594 w $i 1C 0488
@@ -82,7 +81,7 @@ do
 ./udpsendrecv lmx2594 w $i 03 0642
 ./udpsendrecv lmx2594 w $i 02 0500
 ./udpsendrecv lmx2594 w $i 01 080B
-./udpsendrecv lmx2594 w $i 00 6618
-./udpsendrecv lmx2594 r $i 0 00
-./udpsendrecv lmx2594 r $i 0 00
+./udpsendrecv lmx2594 w $i 00 6418
+./udpsendrecv lmx2594 r $i 00 0
+
 done
