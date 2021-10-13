@@ -1,16 +1,16 @@
 all: hello gpio spi_i2c udpsendrecv
 
 hello: *.c
-	gcc -o $@ $^
+	gcc -O0 -o $@ $^
 
 gpio: axi_gpio.c
-	gcc -DAXI_GPIO_MAIN -o $@ $^
+	gcc -O0 -DAXI_GPIO_MAIN -o $@ $^
 
 spi_i2c: axi_gpio.c axi_gpio_spi_i2c.c
-	gcc -DAXI_GPIO_SPI_I2C_MAIN -o $@ $^
+	gcc -O0 -DAXI_GPIO_SPI_I2C_MAIN -o $@ $^
 
 udpsendrecv: udpsendrecv.c
-	gcc -DUDPSENDRECV_MAIN -o $@ $^
+	gcc -O0 -DUDPSENDRECV_MAIN -o $@ $^
 
 .PHONY: clean 
 

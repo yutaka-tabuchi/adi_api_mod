@@ -91,11 +91,11 @@ int32_t adi_ad9081_hal_sysref_ctrl(adi_ad9081_device_t *device,
 				      uint8_t enable)
 {
 	AD9081_NULL_POINTER_RETURN(device);
-#if 0
 	/* Optional callback */
 	if (!device->hal_info.sysref_ctrl)
 		return API_CMS_ERROR_OK;
 
+#if 0
 	if (device->hal_info.sysref_ctrl(device->hal_info.user_data, enable)
 		!= API_CMS_ERROR_OK) {
 		return API_CMS_ERROR_ERROR;
@@ -413,13 +413,8 @@ void AD9082_W(struct udp_env *udp_env_info, unsigned short addr,unsigned char da
     if(val != NULL){
         target_addr = val;
     }
-    //printf("target addr:%s\n", target_addr);
     int retval = exstickge_ad9082(udp_env_info, chip, addr, data, EXSTICKGE_WRITE);
-    //retval = exstickge_ad9082(&env, chip, addr, data, EXSTICKGE_WRITE);
-    //usleep(1000);
-    //printf("0x04=%02x\n", AD9082_R(4));
-    //unsigned char d = AD9082_R(addr);
-    //printf(" addr: %04x, write: %02x, read: %02x\n", addr, data, d);
+    usleep(1000);
 }
 
 
