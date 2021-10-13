@@ -1,7 +1,7 @@
 for i in 8 9
 do
-./udpsendrecv lmx2594 w $i 00 6412 # R6 [14] VCO_PHASE_SYNC=1
-./udpsendrecv lmx2594 w $i 00 6410
+./udpsendrecv lmx2594 w $i 00 6612 # R6 [14] VCO_PHASE_SYNC=1
+./udpsendrecv lmx2594 w $i 00 6610
 ./udpsendrecv lmx2594 r $i 00 0
 ./udpsendrecv lmx2594 w $i 4E 0001
 ./udpsendrecv lmx2594 w $i 4D 0000
@@ -81,13 +81,13 @@ do
 ./udpsendrecv lmx2594 w $i 03 0642
 ./udpsendrecv lmx2594 w $i 02 0500
 ./udpsendrecv lmx2594 w $i 01 080B
-./udpsendrecv lmx2594 w $i 00 6418
-./udpsendrecv lmx2594 r $i 00 0
+./udpsendrecv lmx2594 w $i 00 6618
 ./udpsendrecv lmx2594 w $i 22 0000 # R34 [2:0] PLL_N[18:16]
 ./udpsendrecv lmx2594 w $i 24 001e # R36 PLL_N[15:0]
 ./udpsendrecv lmx2594 w $i 26 0000 # R38 PLL_DEN[31:16]
 ./udpsendrecv lmx2594 w $i 27 0064 # R39 PLL_DEN[15:0]
 ./udpsendrecv lmx2594 w $i 2A 0000 # R42 PLL_NUM[31:16]
 ./udpsendrecv lmx2594 w $i 2B 0000 # R43 PLL_NUM[15:0]
-./udpsendrecv lmx2594 w $i 00 6418
+./udpsendrecv lmx2594 w $i 00 6618
+./udpsendrecv lmx2594 r $i 00 0
 done
