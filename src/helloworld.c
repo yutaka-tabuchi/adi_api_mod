@@ -99,12 +99,12 @@ void ad9082_print_info(adi_ad9081_device_t *ad9081_dev)
 
 void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
 {
-    uint64_t dac_clk_hz =     11640000000;
-    uint64_t adc_clk_hz =     2910000000;
-    uint64_t dev_ref_clk_hz = 11640000000;
-    //uint64_t dac_clk_hz =     12000000000;
-    //uint64_t adc_clk_hz =     6000000000;
-    //uint64_t dev_ref_clk_hz = 12000000000;
+    //uint64_t dac_clk_hz =     11640000000;
+    //uint64_t adc_clk_hz =     2910000000;
+    //uint64_t dev_ref_clk_hz = 11640000000;
+    uint64_t dac_clk_hz =     12000000000;
+    uint64_t adc_clk_hz =     6000000000;
+    uint64_t dev_ref_clk_hz = 12000000000;
 
     int i;
     uint8_t reg_data;
@@ -127,7 +127,7 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
     uint8_t tx_main_interp = 4;
     uint8_t tx_chan_interp = 6;
     uint8_t tx_dac_chan[] = {0x01, 0x01, 0x01, 0x01};
-    int64_t tx_main_shift[] = {100*MHZ, 100*MHZ, 100*MHZ, 100*MHZ };
+    int64_t tx_main_shift[] = {1000*MHZ, 1000*MHZ, 1000*MHZ, 1000*MHZ };
     int64_t tx_chan_shift[] = {10*MHZ, 10*MHZ, 10*MHZ, 10*MHZ, 10*MHZ, 10*MHZ, 10*MHZ, 10*MHZ };
     adi_cms_jesd_param_t jrx_param[2] =
         //  L  F  M  S HD   K   N  NP CF CS DID BID LID SCL SCR DUAL  B/C  ID  C2R S
@@ -140,6 +140,12 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
     uint16_t tx_gains[] = {4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000};
     adi_ad9081_dac_duc_nco_gains_set(ad9081_dev, tx_gains);
     adi_ad9081_dac_mode_set(ad9081_dev, AD9081_DAC_MODE_SWITCH_GROUP_ALL, AD9081_DAC_MODE_0);
+    adi_ad9081_dac_xbar_set(ad9081_dev, AD9081_DAC_0, 0x01);
+    adi_ad9081_dac_xbar_set(ad9081_dev, AD9081_DAC_1, 0x01);
+    adi_ad9081_dac_xbar_set(ad9081_dev, AD9081_DAC_2, 0x01);
+    adi_ad9081_dac_xbar_set(ad9081_dev, AD9081_DAC_3, 0x01);
+    adi_ad9081_dac_fsc_set(ad9081_dev, AD9081_DAC_ALL, 100000);
+    adi_ad9081_dac_duc_nco_set(ad9081_dev, AD9081_DAC_ALL, 0xFF, 1000*MHZ);
 
     // Rx CONFIGURATION
     uint8_t rx_cddc_select = AD9081_ADC_CDDC_ALL;
