@@ -137,7 +137,7 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
     adi_ad9081_device_startup_tx(ad9081_dev, tx_main_interp, tx_chan_interp,
                                  tx_dac_chan, tx_main_shift, tx_chan_shift, jrx_param);
 
-    uint16_t tx_gains[] = {4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000};
+    uint16_t tx_gains[] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
     adi_ad9081_dac_duc_nco_gains_set(ad9081_dev, tx_gains);
     adi_ad9081_dac_mode_set(ad9081_dev, AD9081_DAC_MODE_SWITCH_GROUP_ALL, AD9081_DAC_MODE_0);
     adi_ad9081_dac_xbar_set(ad9081_dev, AD9081_DAC_0, 0x01);
@@ -145,7 +145,7 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
     adi_ad9081_dac_xbar_set(ad9081_dev, AD9081_DAC_2, 0x01);
     adi_ad9081_dac_xbar_set(ad9081_dev, AD9081_DAC_3, 0x01);
     adi_ad9081_dac_fsc_set(ad9081_dev, AD9081_DAC_ALL, 100000);
-    adi_ad9081_dac_duc_nco_set(ad9081_dev, AD9081_DAC_ALL, 0xFF, 1000*MHZ);
+    adi_ad9081_dac_duc_nco_set(ad9081_dev, AD9081_DAC_ALL, 0xFF, 2000000000);
 
     // Rx CONFIGURATION
     uint8_t rx_cddc_select = AD9081_ADC_CDDC_ALL;
@@ -188,6 +188,9 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
     adi_ad9081_jesd_rx_link_enable_set(ad9081_dev, AD9081_LINK_ALL, 1);
 
     for(i=0;i<4;i++){
+        adi_ad9081_hal_reg_set(ad9081_dev, 0x5BB, 0x00);
+        adi_ad9081_hal_reg_set(ad9081_dev, 0x5BB, 0x01);
+        
     	adi_ad9081_hal_reg_get(ad9081_dev,0x55E,&reg_data);
     	printf("0x55E=%X\n",reg_data);
         adi_ad9081_hal_reg_get(ad9081_dev, 0x5BB, &reg_data);
