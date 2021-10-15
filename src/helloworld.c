@@ -145,7 +145,7 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
     adi_ad9081_dac_xbar_set(ad9081_dev, AD9081_DAC_2, 0x01);
     adi_ad9081_dac_xbar_set(ad9081_dev, AD9081_DAC_3, 0x01);
     adi_ad9081_dac_fsc_set(ad9081_dev, AD9081_DAC_ALL, 100000);
-    adi_ad9081_dac_duc_nco_set(ad9081_dev, AD9081_DAC_ALL, 0xFF, 2000000000);
+    adi_ad9081_dac_duc_nco_set(ad9081_dev, AD9081_DAC_ALL, 0xFF, 3000000000);
 
     // Rx CONFIGURATION
     uint8_t rx_cddc_select = AD9081_ADC_CDDC_ALL;
