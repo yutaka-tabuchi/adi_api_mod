@@ -7,3 +7,4 @@ udpsendrecv
 html
 latex
 set_nco
+.nfs*
