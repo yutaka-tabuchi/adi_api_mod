@@ -1,3 +1,5 @@
+# QuBE内LSI設定ツール
+
 ## Build
 
 ```
@@ -8,8 +10,7 @@ make
 ## Example
 
 ```
-cd src
-AD9082_CHIP=1 TARGET_ADDRESS=10.0.0.3 ./helloworld
+AD9082_CHIP=1 TARGET_ADDRESS=10.5.0.1 ./hello
 ```
 
 ## 設定スクリプト・プログラム

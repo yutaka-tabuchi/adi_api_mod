@@ -8,7 +8,7 @@
 ./udpsendrecv lmx2594 w $1 4A 0000 # R74 [15:2] SYSREF_PULSE_COUNT=0
 ./udpsendrecv lmx2594 w $1 49 003F
 ./udpsendrecv lmx2594 w $1 48 0000 # R72 [10:0] SYSREF_DIV
-./udpsendrecv lmx2593 w $1 47 0081 # R71 [7:5]SYSREF_DIV_PRE=4='Divided by 4', [3]SYSREF_EN=0, [2]SYSREF_REPEAT=0
+./udpsendrecv lmx2594 w $1 47 0081 # R71 [7:5]SYSREF_DIV_PRE=4='Divided by 4', [3]SYSREF_EN=0, [2]SYSREF_REPEAT=0
 ./udpsendrecv lmx2594 w $1 46 C350
 ./udpsendrecv lmx2594 w $1 45 0000
 ./udpsendrecv lmx2594 w $1 44 03E8
