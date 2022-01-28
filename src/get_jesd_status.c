@@ -1,17 +1,14 @@
+#ifdef GET_JESD_STATUS
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include "adi_ad9081_config.h"
 #include "adi_ad9081_hal.h"
-
-#include "udpsendrecv.h"
-
-#define KHZ 1000
 #define MHZ 1000000
 
-#define RX_ENABLE
-//#define LANE_1
+#include "udpsendrecv.h"
 
 void SetDevinfo(adi_ad9081_device_t *ad9081_dev){
     int i;
@@ -57,12 +54,19 @@ void ad9082_print_info(adi_ad9081_device_t *ad9081_dev)
 
 void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
 {
-    uint64_t dac_clk_hz =     12000000000;
-    uint64_t adc_clk_hz =     6000000000;
-    uint64_t dev_ref_clk_hz = 12000000000;
-
     int i;
     uint8_t reg_data;
+#if 0
+    //uint64_t dac_clk_hz =     11640000000;
+    //uint64_t adc_clk_hz =     2910000000;
+    //uint64_t dev_ref_clk_hz = 11640000000;
+    uint64_t dac_clk_hz =     12000000000;
+    uint64_t adc_clk_hz =     3000000000;
+    uint64_t dev_ref_clk_hz = 12000000000;
+    //uint64_t dac_clk_hz =     9600000000;
+    //uint64_t adc_clk_hz =     2400000000;
+    //uint64_t dev_ref_clk_hz = 9600000000;
+
     int ret;
 
     // DEVICE INITIALIZATION AND CLOCK CONFIGURATION
@@ -79,24 +83,17 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
     ad9082_print_info(ad9081_dev);
 
     // Tx CONFIGURATION
-    //uint8_t tx_main_interp = 6;
-    //uint8_t tx_chan_interp = 4;
     uint8_t tx_main_interp = 4;
     uint8_t tx_chan_interp = 6;
     uint8_t tx_dac_chan[] = {0x1, 0x2, 0x1c, 0xe0};
     int64_t tx_main_shift[] = {1000*MHZ, 1000*MHZ, 1000*MHZ, 1000*MHZ };
     int64_t tx_chan_shift[] = {0*MHZ, 0*MHZ, 0*MHZ, 0*MHZ, 0*MHZ, 0*MHZ, 0*MHZ, 0*MHZ };
-#ifdef LANE_1	
-    adi_cms_jesd_param_t jrx_param[2] =
-        //  L  F  M  S HD   K   N  NP CF CS DID BID LID SCL SCR DUAL  B/C  ID  C2R S
-        { { 1, 4, 2, 1, 0, 64, 16, 16, 0, 0, 0,  0, 0,   0,  1, 0,    2,   2,   0,  0 },
-          { 1, 4, 2, 1, 0, 64, 16, 16, 0, 0, 0,  0, 0,   0,  1, 0,    2,   2,   0,  0 } };
-#else
     adi_cms_jesd_param_t jrx_param[2] =
         //  L  F   M  S HD   K   N  NP CF CS DID BID LID SCL SCR DUAL  B/C  ID  C2R S
-        { { 8, 4, 16, 1, 0, 64, 16, 16, 0, 0, 0,  0, 0,   0,  1, 0,    2,   16,   0,  0 },
-          { 8, 4, 16, 1, 0, 64, 16, 16, 0, 0, 0,  0, 0,   0,  1, 0,    2,   16,   0,  0 } };
-#endif
+        //{ { 1, 4, 2, 1, 0, 64, 16, 16, 0, 0, 0,  0, 0,   0,  0, 0,    2,   2,   0,  0 },
+        //  { 1, 4, 2, 1, 0, 64, 16, 16, 0, 0, 0,  0, 0,   0,  0, 0,    2,   2,   0,  0 } };
+        { { 8, 4, 16, 1, 0, 64, 16, 16, 0, 0, 0,  0, 0,   0,  0, 0,    2,   16,   0,  0 },
+          { 8, 4, 16, 1, 0, 64, 16, 16, 0, 0, 0,  0, 0,   0,  0, 0,    2,   16,   0,  0 } };
 
     for(i = 0; i < 8; i++){
        adi_ad9081_jesd_rx_lane_xbar_set(ad9081_dev, AD9081_LINK_0, i, i);
@@ -106,31 +103,29 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
 
     uint16_t tx_gains[] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
     adi_ad9081_dac_duc_nco_gains_set(ad9081_dev, tx_gains);
-    //adi_ad9081_dac_mode_set(ad9081_dev, AD9081_DAC_MODE_SWITCH_GROUP_ALL, AD9081_DAC_MODE_0);
+    adi_ad9081_dac_mode_set(ad9081_dev, AD9081_DAC_MODE_SWITCH_GROUP_ALL, AD9081_DAC_MODE_0);
     //adi_ad9081_dac_xbar_set(ad9081_dev, AD9081_DAC_0, 0x01);
     //adi_ad9081_dac_xbar_set(ad9081_dev, AD9081_DAC_1, 0x01);
     //adi_ad9081_dac_xbar_set(ad9081_dev, AD9081_DAC_2, 0x01);
     //adi_ad9081_dac_xbar_set(ad9081_dev, AD9081_DAC_3, 0x01);
-    //adi_ad9081_dac_fsc_set(ad9081_dev, AD9081_DAC_ALL, 26000);
+    adi_ad9081_dac_fsc_set(ad9081_dev, AD9081_DAC_ALL, 26000);
     adi_ad9081_dac_duc_nco_set(ad9081_dev, AD9081_DAC_ALL, AD9081_DAC_CH_ALL, 3000000000);
 
-#ifdef RX_ENABLE
     // Rx CONFIGURATION
     uint8_t rx_cddc_select = AD9081_ADC_CDDC_ALL;
     uint8_t rx_fddc_select = AD9081_ADC_FDDC_ALL;
-    int64_t cdcc_shift[]={1700*MHZ,1700*MHZ,1700*MHZ,1700*MHZ};
-    int64_t fdcc_shift[]={0*KHZ,0*KHZ,0*KHZ,0*KHZ,0*KHZ,0*KHZ,0*KHZ,0*KHZ};
-    uint8_t cddc_dcm[]={AD9081_CDDC_DCM_3,AD9081_CDDC_DCM_3,AD9081_CDDC_DCM_3,AD9081_CDDC_DCM_3};
-    uint8_t fddc_dcm[]={AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,
-	                AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2};
-    uint8_t rx_cddc_c2r[]={0x0,0x0,0x0,0x0};
-    uint8_t rx_fddc_c2r[]={0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0};
+    int64_t cdcc_shift[]={0,250000000,500000000,750000000};
+    int64_t fdcc_shift[]={0,100000000,0,100000000,0,100000000,0,100000000};
+    uint8_t cddc_dcm[] = { AD9081_CDDC_DCM_3,AD9081_CDDC_DCM_3,AD9081_CDDC_DCM_3,AD9081_CDDC_DCM_3};
+    uint8_t fddc_dcm[]={AD9081_FDDC_DCM_1,AD9081_FDDC_DCM_1,AD9081_FDDC_DCM_1,AD9081_FDDC_DCM_1,AD9081_FDDC_DCM_1,AD9081_FDDC_DCM_1,AD9081_FDDC_DCM_1,AD9081_FDDC_DCM_1};
+    uint8_t rx_cddc_c2r[]={0x1,0x1,0x1,0x1};
+    uint8_t rx_fddc_c2r[]={0x1,0x1,0x1,0x1,0x1,0x1,0x1,0x1};
 
     adi_cms_jesd_param_t jtx_param[2] =
         //  L  F  M  S HD   K   N  NP CF CS DID BID LID SCL SCR DUAL  B/C  ID  C2R S
-        { { 8, 4, 16, 1, 0, 64,16, 16, 0, 0, 0,  0, 0,   0,  0, 0,    2,   17, 0,  0 },
-	  { 8, 4, 16, 1, 0, 64,16, 16, 0, 0, 0,  0, 0,   0,  0, 0,    2,   17, 0,  0 } };
-    adi_ad9081_jtx_conv_sel_t jesd_conv_sel[2]={{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15},{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}};
+        { { 8, 2, 8, 1, 0, 128,16, 16, 0, 0, 0,  0, 0,   0,  1, 0,    2,   16, 0,  0 },
+	  { 8, 2, 8, 1, 0, 128,16, 16, 0, 0, 0,  0, 0,   0,  1, 0,    2,   16, 0,  0 } };
+    adi_ad9081_jtx_conv_sel_t jesd_conv_sel[2]={{0,1,2,3,4,5,6,7,0,1,2,3,4,5,6,7},{0,1,2,3,4,5,6,7,0,1,2,3,4,5,6,7}};
 
     //printf("0>"); getchar();
     adi_ad9081_device_startup_rx(ad9081_dev,
@@ -145,7 +140,7 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
                                  jtx_param,
                                  jesd_conv_sel);
     //printf("1>"); getchar();
-    //adi_ad9081_adc_ddc_coarse_nco_mode_set(ad9081_dev, AD9081_ADC_CDDC_ALL, AD9081_ADC_NCO_VIF);
+    adi_ad9081_adc_ddc_coarse_nco_mode_set(ad9081_dev, 0xff, AD9081_ADC_NCO_VIF);
     //printf("2>"); getchar();
     uint8_t adc_cddc_xbar, cddc_fddc_xbar;
     adc_cddc_xbar = AD9081_ADC_2_ADC_COMP_MODE;
@@ -154,30 +149,19 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
     cddc_fddc_xbar |= AD9081_ADC_CDDC2_TO_FDDC4 |
                       AD9081_ADC_CDDC3_TO_FDDC5 |
                       AD9081_ADC_CDDC2_TO_FDDC6 | AD9081_ADC_CDDC3_TO_FDDC7;
-    //adi_ad9081_adc_xbar_set(ad9081_dev, adc_cddc_xbar, cddc_fddc_xbar);
+    adi_ad9081_adc_xbar_set(ad9081_dev, adc_cddc_xbar, cddc_fddc_xbar);
     //printf("3>"); getchar();
-    //adi_ad9081_jesd_tx_fbw_sel_set(ad9081_dev, AD9081_LINK_ALL, 0xFFFF);
+    adi_ad9081_jesd_tx_fbw_sel_set(ad9081_dev, AD9081_LINK_ALL, 0xFFFF);
     //printf("4>"); getchar();
-    //adi_ad9081_adc_nyquist_zone_set(ad9081_dev, AD9081_ADC_NYQUIST_ZONE_ODD);
+    adi_ad9081_adc_nyquist_zone_set(ad9081_dev, AD9081_ADC_NYQUIST_ZONE_ODD);
     //printf("5>"); getchar();
-    //adi_ad9081_adc_ddc_fine_gain_set(ad9081_dev, AD9081_ADC_FDDC_ALL, 0);
+    adi_ad9081_adc_ddc_fine_gain_set(ad9081_dev, AD9081_ADC_FDDC_ALL, 0);
     //printf("6>"); getchar();
 
-    //adi_ad9081_adc_ddc_coarse_nco_set(ad9081_dev, AD9081_ADC_CDDC_ALL, 10*MHZ);
-    adi_ad9081_adc_ddc_coarse_nco_enable_set(ad9081_dev, AD9081_ADC_CDDC_ALL);
-    //adi_ad9081_adc_ddc_coarse_sync_enable_set(ad9081_dev, AD9081_ADC_CDDC_ALL, 0);
-
-    //adi_ad9081_adc_ddc_fine_nco_set(ad9081_dev, AD9081_ADC_FDDC_ALL, 100*MHZ);
-    //adi_ad9081_adc_ddc_fine_nco_enable_set(ad9081_dev, AD9081_ADC_FDDC_ALL);
-
-#endif
-
     // LINK ESTABLISHMENT AND MONITORING
-    adi_ad9081_adc_nco_master_slave_sync(ad9081_dev, 1, 1, 0, 0);
+    adi_ad9081_adc_nco_master_slave_sync(ad9081_dev, 0, 0, 0, 0);
     //printf("7>"); getchar();
-#ifdef RX_ENABLE
     adi_ad9081_jesd_tx_link_enable_set(ad9081_dev, AD9081_LINK_ALL, 1);
-#endif
     //printf("8>"); getchar();
     adi_ad9081_jesd_rx_link_enable_set(ad9081_dev, AD9081_LINK_ALL, 1);
     //printf("9>"); getchar();
@@ -186,6 +170,7 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
     adi_ad9081_jesd_rx_link_enable_set(ad9081_dev, AD9081_LINK_ALL, 1);
     //printf("11>"); getchar();
 
+#endif
 
     for(i=0;i<4;i++){
         adi_ad9081_hal_reg_set(ad9081_dev, 0x5BB, 0x00);
@@ -229,3 +214,4 @@ int main()
 
     return 0;
 }
+#endif /* GET_JESD_STATUS */

@@ -66,41 +66,11 @@ int32_t adi_ad9081_hal_reset_pin_ctrl(adi_ad9081_device_t *device,
 {
 	AD9081_NULL_POINTER_RETURN(device);
 	//AD9081_NULL_POINTER_RETURN(device->hal_info.reset_pin_ctrl);
-#if 0 // HW reset is not used in QuBE
-	//unsigned int* gpio=(unsigned int*)0xA0000000;
-        //
-	//if(enable>0)*gpio = 0x29;
-	//else *gpio = 0x28;
-
-        if(enable > 0){
-            axi_gpio_write_once(0xA0000000, 1);
-        }else{
-            axi_gpio_write_once(0xA0000000, 0);
-        }
-#endif        
-        
 //	if (API_CMS_ERROR_OK != device->hal_info.reset_pin_ctrl(
 //					device->hal_info.user_data, enable)) {
 //		return API_CMS_ERROR_RESET_PIN_CTRL;
 //	}
 
-	return API_CMS_ERROR_OK;
-}
-
-int32_t adi_ad9081_hal_sysref_ctrl(adi_ad9081_device_t *device,
-				      uint8_t enable)
-{
-	AD9081_NULL_POINTER_RETURN(device);
-	/* Optional callback */
-	if (!device->hal_info.sysref_ctrl)
-		return API_CMS_ERROR_OK;
-
-#if 0
-	if (device->hal_info.sysref_ctrl(device->hal_info.user_data, enable)
-		!= API_CMS_ERROR_OK) {
-		return API_CMS_ERROR_ERROR;
-	}
-#endif
 	return API_CMS_ERROR_OK;
 }
 
@@ -325,6 +295,7 @@ int32_t adi_ad9081_hal_reg_get(adi_ad9081_device_t *device, uint32_t reg,
 		//	return API_CMS_ERROR_LOG_WRITE;
 	} else { /* access extended 32-bit data space */
 		printf("extend -read!! %X\n",reg);
+		//in_data[-1] = 0x3D;
 		in_data[0] = 0x3D;
 		in_data[1] = 0x21;
 		in_data[2] = (reg >> 8) & 0xC0;
