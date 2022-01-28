@@ -860,7 +860,6 @@ typedef struct {
 	adi_ad9081_hal_t hal_info;
 	adi_ad9081_info_t dev_info;
 	adi_ad9081_serdes_settings_t serdes_info;
-	struct udp_env udp_env_info;
 } adi_ad9081_device_t;
 
 /*============= E X P O R T S ==============*/
