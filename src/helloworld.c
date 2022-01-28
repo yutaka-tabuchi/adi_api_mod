@@ -55,6 +55,17 @@ void ad9082_print_info(adi_ad9081_device_t *ad9081_dev)
     printf("VENDER_ID_MSB = %02x\n", reg_data);
 }
 
+int ad9082_chip()
+{
+    char *val;
+    val = getenv("AD9082_CHIP");
+    int chip = 0;
+    if(val != NULL && strcmp(val, "1") == 0){
+        chip = 1;
+    }
+    return chip;
+}
+
 void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
 {
     uint64_t dac_clk_hz =     12000000000;
@@ -84,6 +95,12 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
     uint8_t tx_main_interp = 4;
     uint8_t tx_chan_interp = 6;
     uint8_t tx_dac_chan[] = {0x1, 0x2, 0x1c, 0xe0};
+    if(ad9082_chip() == 1){
+        tx_dac_chan[0] = 0x07;
+        tx_dac_chan[1] = 0x38;
+        tx_dac_chan[2] = 0x40;
+        tx_dac_chan[3] = 0x80;
+    }
     int64_t tx_main_shift[] = {1000*MHZ, 1000*MHZ, 1000*MHZ, 1000*MHZ };
     int64_t tx_chan_shift[] = {0*MHZ, 0*MHZ, 0*MHZ, 0*MHZ, 0*MHZ, 0*MHZ, 0*MHZ, 0*MHZ };
 #ifdef LANE_1	
