@@ -173,9 +173,6 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
 #endif
 
     for(i=0;i<4;i++){
-        adi_ad9081_hal_reg_set(ad9081_dev, 0x5BB, 0x00);
-        adi_ad9081_hal_reg_set(ad9081_dev, 0x5BB, 0x01);
-        
     	adi_ad9081_hal_reg_get(ad9081_dev,0x55E,&reg_data);
     	printf("0x55E=%X\n",reg_data);
         adi_ad9081_hal_reg_get(ad9081_dev, 0x5BB, &reg_data);
@@ -190,6 +187,8 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
 
     //adi_ad9081_device_direct_loopback_set(ad9081_dev, 1, 0xFF);
     //adi_ad9081_jesd_loopback_mode_set(ad9081_dev, 1);
+    adi_ad9081_hal_reg_get(ad9081_dev, 0x728, &reg_data);
+    printf("0x728=%X\n", reg_data);
 }
 
 int main()
