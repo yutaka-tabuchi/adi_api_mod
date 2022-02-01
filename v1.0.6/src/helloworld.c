@@ -61,6 +61,17 @@ int ad9082_chip()
     return chip;
 }
 
+int ad9082_adc_scramble()
+{
+    int flag = 1; // default enable
+    char *val;
+    val = getenv("AD9082_ADC_SCRAMBLE");
+    if(val != NULL && strcmp(val, "0") == 0){
+        flag = 0; // disabled if defiend and '0'
+    }
+    return flag;
+}
+
 void print_reg(adi_ad9081_device_t *ad9081_dev, int addr)
 {
     uint8_t reg_data;
@@ -173,9 +184,13 @@ int main()
     uint8_t rx_fddc_c2r[]={0,0,0,0,0,0,0,0};
 
     adi_cms_jesd_param_t jtx_param[2] =
-    //  L  F  M  S HD   K   N  NP CF CS DID BID LID SCL SCR DUAL  B/C  ID  C2R S
-    { { 8, 4, 16, 1, 0, 64,16, 16, 0, 0, 0,  0, 0,   0,  0, 0,    2,   17, 0,  0 },
-      { 8, 4, 16, 1, 0, 64,16, 16, 0, 0, 0,  0, 0,   0,  0, 0,    2,   17, 0,  0 } };
+    //  L  F   M  S HD   K   N  NP CF CS DID BID LID SCL SCR DUAL  B/C  ID  C2R   S
+    { { 8, 4, 16, 1, 0, 64, 16, 16, 0, 0,  0,  0,  0,  0,  1,   0,   2, 17,   0,  0 },
+      { 8, 4, 16, 1, 0, 64, 16, 16, 0, 0,  0,  0,  0,  0,  1,   0,   2, 17,   0,  0 } };
+    if(ad9082_adc_scramble() == 0){
+      jtx_param[0].jesd_scr = 0;
+      jtx_param[1].jesd_scr = 0;
+    }
     adi_ad9081_jtx_conv_sel_t jesd_conv_sel[2]={{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15},{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}};
 
     adi_ad9081_device_startup_rx(&ad9081_dev, rx_cddc_select, rx_fddc_select,cdcc_shift,fdcc_shift,
@@ -213,6 +228,9 @@ int main()
     print_reg(&ad9081_dev, 0x0ca);
 
     ad9082_print_info(&ad9081_dev);
+    if(ad9082_adc_scramble() == 0){
+      printf("ADC9082 ADC SCRAMBLE is disabled\n");
+    }
 
     return 0;
 }
