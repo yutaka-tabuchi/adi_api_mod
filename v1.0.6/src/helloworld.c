@@ -78,7 +78,7 @@ int main()
     int i;
     adi_ad9081_device_t ad9081_dev;
     uint64_t dac_clk_hz=    11640000000;
-    uint64_t adc_clk_hz=     2910000000;
+    uint64_t adc_clk_hz=     2910000000*2;
     uint64_t dev_ref_clk_hz=11640000000;
 
     printf("Hello World \n\r");
@@ -163,19 +163,19 @@ int main()
     uint8_t rx_cddc_select = AD9081_ADC_CDDC_ALL;
     uint8_t rx_fddc_select = AD9081_ADC_FDDC_ALL;
     int64_t cdcc_val, fdcc_val;
-    cdcc_val = 1000*MHZ;
+    cdcc_val = 1455000000L;
     fdcc_val = 0;
     int64_t cdcc_shift[]={cdcc_val, cdcc_val, cdcc_val, cdcc_val};
     int64_t fdcc_shift[]={fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val}; 
-    uint8_t cddc_dcm[] = { AD9081_CDDC_DCM_3,AD9081_CDDC_DCM_3,AD9081_CDDC_DCM_3,AD9081_CDDC_DCM_3};
+    uint8_t cddc_dcm[] = { AD9081_CDDC_DCM_6,AD9081_CDDC_DCM_6,AD9081_CDDC_DCM_6,AD9081_CDDC_DCM_6};
     uint8_t fddc_dcm[]={AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2};
     uint8_t rx_cddc_c2r[]={0,0,0,0};
     uint8_t rx_fddc_c2r[]={0,0,0,0,0,0,0,0};
 
     adi_cms_jesd_param_t jtx_param[2] =
     //  L  F  M  S HD   K   N  NP CF CS DID BID LID SCL SCR DUAL  B/C  ID  C2R S
-    { { 8, 4, 16, 1, 0, 64,16, 16, 0, 0, 0,  0, 0,   0,  1, 0,    2,   17, 0,  0 },
-      { 8, 4, 16, 1, 0, 64,16, 16, 0, 0, 0,  0, 0,   0,  1, 0,    2,   17, 0,  0 } };
+    { { 8, 4, 16, 1, 0, 64,16, 16, 0, 0, 0,  0, 0,   0,  0, 0,    2,   17, 0,  0 },
+      { 8, 4, 16, 1, 0, 64,16, 16, 0, 0, 0,  0, 0,   0,  0, 0,    2,   17, 0,  0 } };
     adi_ad9081_jtx_conv_sel_t jesd_conv_sel[2]={{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15},{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}};
 
     adi_ad9081_device_startup_rx(&ad9081_dev, rx_cddc_select, rx_fddc_select,cdcc_shift,fdcc_shift,
