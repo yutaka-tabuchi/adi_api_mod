@@ -45,7 +45,7 @@ do
 ./udpsendrecv lmx2594 w $i 27 0001
 ./udpsendrecv lmx2594 w $i 26 0000
 ./udpsendrecv lmx2594 w $i 25 0204
-./udpsendrecv lmx2594 w $i 24 0078 # 120
+./udpsendrecv lmx2594 w $i 24 006e # 110
 ./udpsendrecv lmx2594 w $i 23 0004
 ./udpsendrecv lmx2594 w $i 22 0000
 ./udpsendrecv lmx2594 w $i 21 1E21
