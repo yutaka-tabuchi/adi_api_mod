@@ -174,7 +174,7 @@ int main()
     uint8_t rx_cddc_select = AD9081_ADC_CDDC_ALL;
     uint8_t rx_fddc_select = AD9081_ADC_FDDC_ALL;
     int64_t cdcc_val, fdcc_val;
-    cdcc_val = 1455000000L;
+    cdcc_val = 1000000000L;
     fdcc_val = 0;
     int64_t cdcc_shift[]={cdcc_val, cdcc_val, cdcc_val, cdcc_val};
     int64_t fdcc_shift[]={fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val}; 
