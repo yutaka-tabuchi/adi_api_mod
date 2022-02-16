@@ -3,7 +3,7 @@ import subprocess
 
 class AD9082:
 
-    def __init__(self, addr, chip, path):
+    def __init__(self, addr, path, chip):
         self.addr = addr
         self.chip = str(chip)
         self.path = path
