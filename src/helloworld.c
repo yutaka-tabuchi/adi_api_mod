@@ -101,6 +101,10 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
         { { 8, 4, 16, 1, 0, 64,16, 16, 0, 0, 0,  0, 0,   0,  1, 0,    2,   17, 0,  0 },
 	  { 8, 4, 16, 1, 0, 64,16, 16, 0, 0, 0,  0, 0,   0,  1, 0,    2,   17, 0,  0 } };
     adi_ad9081_jtx_conv_sel_t jesd_conv_sel[2]={{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15},{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}};
+    if(ad9082_adc_scramble() == 0){
+        jtx_param[0].jesd_scr = 0;
+        jtx_param[1].jesd_scr = 0;
+    }
 
     //printf("0>"); getchar();
     ret = adi_ad9081_device_startup_rx(ad9081_dev,
