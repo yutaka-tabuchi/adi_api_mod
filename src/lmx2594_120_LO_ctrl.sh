@@ -1,4 +1,4 @@
-for i in 0 1 2 3 4 5 6 7
+for i in 2 3 4 5
 do
 ./udpsendrecv lmx2594 w $i 00 2612 # R6 [14]VCO_PHASE_SYNC=0, [9]OUT_MUTE=1
 ./udpsendrecv lmx2594 w $i 00 2610

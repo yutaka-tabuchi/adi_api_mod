@@ -3,8 +3,8 @@
 
 #include "adi_ad9081_config.h"
 #include "adi_ad9081_hal.h"
-#define MHZ 1000000
-#define KHZ 1000
+#define MHZ 1000000L
+#define KHZ 1000L
 
 
 void SetDevinfo(adi_ad9081_device_t *ad9081_dev){
@@ -141,7 +141,16 @@ int main()
         tx_dac_chan[3] = 0x80;
     }
 
-    int64_t tx_main_shift[] = {1000*MHZ, 1000*MHZ, 1000*MHZ, 1000*MHZ };
+    //int64_t tx_main_shift[] = {2910L*MHZ, 2910L*MHZ, 2910L*MHZ, 2910L*MHZ }; // 3000MHz
+    int64_t tx_main_shift[] = {2716L*MHZ, 2716L*MHZ, 2716L*MHZ, 2716L*MHZ }; // 2800MHz
+    //int64_t tx_main_shift[] = {2328*MHZ, 2328*MHZ, 2328*MHZ, 2328*MHZ }; // 2400MHz
+    //int64_t tx_main_shift[] = {2134L*MHZ, 2134L*MHZ, 2134L*MHZ, 2134L*MHZ }; // 2200MHz
+    //int64_t tx_main_shift[] = {1940*MHZ, 1940*MHZ, 1940*MHZ, 1940*MHZ }; // 2000MHz
+    //int64_t tx_main_shift[] = {1746*MHZ, 1746*MHZ, 1746*MHZ, 1746*MHZ }; // 1800MHz
+    //int64_t tx_main_shift[] = {1649*MHZ, 1649*MHZ, 1649*MHZ, 1649*MHZ }; // 1700MHz
+    //int64_t tx_main_shift[] = {1552*MHZ, 1552*MHZ, 1552*MHZ, 1552*MHZ }; // 1600MHz
+    //int64_t tx_main_shift[] = {1455*MHZ, 1455*MHZ, 1455*MHZ, 1455*MHZ }; // 1500MHz
+    //int64_t tx_main_shift[] = {1358*MHZ, 1358*MHZ, 1358*MHZ, 1358*MHZ }; // 1400MHz
     int64_t tx_chan_shift[] = {0*KHZ, 0*KHZ, 0*KHZ, 0*KHZ, 0*KHZ, 0*KHZ, 0*KHZ, 0*KHZ };
 #ifdef USE_1LANE
     adi_cms_jesd_param_t jrx_param[2] =
@@ -166,15 +175,15 @@ int main()
     adi_ad9081_jesd_rx_link_enable_set(&ad9081_dev, AD9081_LINK_0, 1);
     //printf("+%d>", step++); getchar();
     
-    //adi_ad9081_hal_reg_set(&ad9081_dev, 0x01B,0x0F);// morisaka-220118  DAC-mask
-    //adi_ad9081_hal_reg_set(&ad9081_dev, 0x117,0xA0);// morisaka-220118  fullscale-current
-    //adi_ad9081_hal_reg_set(&ad9081_dev, 0x118,0xFF);// morisaka-220118  fullscale-current
+    adi_ad9081_hal_reg_set(&ad9081_dev, 0x01B,0x0F);// morisaka-220118  DAC-mask
+    adi_ad9081_hal_reg_set(&ad9081_dev, 0x117,0xA0);// morisaka-220118  fullscale-current
+    adi_ad9081_hal_reg_set(&ad9081_dev, 0x118,0xFF);// morisaka-220118  fullscale-current
 
     /******    ADC-Setup   ********/
     uint8_t rx_cddc_select = AD9081_ADC_CDDC_ALL;
     uint8_t rx_fddc_select = AD9081_ADC_FDDC_ALL;
     int64_t cdcc_val, fdcc_val;
-    cdcc_val = 1455000000L;
+    cdcc_val = 1164000000;
     fdcc_val = 0;
     int64_t cdcc_shift[]={cdcc_val, cdcc_val, cdcc_val, cdcc_val};
     int64_t fdcc_shift[]={fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val}; 
