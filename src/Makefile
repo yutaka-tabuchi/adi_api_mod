@@ -1,6 +1,17 @@
+LIBRARIES = adi_ad9081_jesd.c \
+            adi_ad9081_adc.c \
+            axi_gpio_spi_i2c.c \
+            axi_gpio.c \
+            adi_ad9081_device.c \
+            adi_ad9081_dac.c \
+            adi_ad9081_hal.c \
+            udpsendrecv.c \
+            util.c
+
 all: hello gpio spi_i2c udpsendrecv set_nco set_xbar set_dac_lane_mapping get_jesd_status
 
-hello: *.c
+
+hello: ${LIBRARIES} helloworld.c
 	gcc -O0 -o $@ $^
 
 gpio: axi_gpio.c
@@ -12,17 +23,17 @@ spi_i2c: axi_gpio.c axi_gpio_spi_i2c.c
 udpsendrecv: udpsendrecv.c
 	gcc -O0 -DUDPSENDRECV_MAIN -o $@ $^
 
-set_nco: set_nco.c
-	gcc -DSET_NCO_MAIN -O0 -o set_nco adi_ad9081_jesd.c set_nco.c adi_ad9081_adc.c axi_gpio_spi_i2c.c udpsendrecv.c axi_gpio.c adi_ad9081_device.c adi_ad9081_dac.c adi_ad9081_hal.c
+set_nco: ${LIBRARIES} set_nco.c
+	gcc -DSET_NCO_MAIN -O0 -o $@ $^
 
-set_xbar: set_xbar.c
-	gcc -DSET_XBAR_MAIN -O0 -o set_xbar adi_ad9081_jesd.c set_xbar.c adi_ad9081_adc.c axi_gpio_spi_i2c.c udpsendrecv.c axi_gpio.c adi_ad9081_device.c adi_ad9081_dac.c adi_ad9081_hal.c
+set_xbar: ${LIBRARIES} set_xbar.c
+	gcc -DSET_XBAR_MAIN -O0 -o $@ $^
 
-set_dac_lane_mapping: set_dac_lane_mapping.c
-	gcc -DSET_XBAR_MAIN -O0 -o set_dac_lane_mapping adi_ad9081_jesd.c set_dac_lane_mapping.c adi_ad9081_adc.c axi_gpio_spi_i2c.c udpsendrecv.c axi_gpio.c adi_ad9081_device.c adi_ad9081_dac.c adi_ad9081_hal.c
+set_dac_lane_mapping: ${LIBRARIES} set_dac_lane_mapping.c
+	gcc -DSET_XBAR_MAIN -O0 -o $@ $^
 
-get_jesd_status: get_jesd_status.c
-	gcc -DGET_JESD_STATUS -O0 -o get_jesd_status adi_ad9081_jesd.c get_jesd_status.c adi_ad9081_adc.c axi_gpio_spi_i2c.c udpsendrecv.c axi_gpio.c adi_ad9081_device.c adi_ad9081_dac.c adi_ad9081_hal.c
+get_jesd_status: ${LIBRARIES} get_jesd_status.c
+	gcc -DGET_JESD_STATUS -O0 -o $@ $^
 
 .PHONY: clean 
 

@@ -1,66 +1,127 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <getopt.h>
 
 #include "adi_ad9081_config.h"
 #include "adi_ad9081_hal.h"
 #define MHZ 1000000
 
 #include "udpsendrecv.h"
+#include "util.h"
 
-#ifdef SET_NCO_MAIN
-void SetDevinfo(adi_ad9081_device_t *ad9081_dev){
-    int i;
-    ad9081_dev->hal_info.sdo=SPI_SDO;
-    ad9081_dev->hal_info.msb=SPI_MSB_FIRST;
-    ad9081_dev->hal_info.addr_inc=SPI_ADDR_INC_AUTO;
-
-    ad9081_dev->serdes_info.des_settings.boost_mask=0xff;
-    ad9081_dev->serdes_info.des_settings.invert_mask=0x00;
-    for(i=0;i<8;i++){
-        ad9081_dev->serdes_info.des_settings.ctle_filter[i]=0;
-        ad9081_dev->serdes_info.des_settings.lane_mapping[0][i]=i;
-        ad9081_dev->serdes_info.des_settings.lane_mapping[1][i]=i;
-    }
-    ad9081_dev->serdes_info.ser_settings.invert_mask=0x00;
-    for(i=0;i<8;i++){
-        ad9081_dev->serdes_info.ser_settings.lane_mapping[0][i]=i;
-        ad9081_dev->serdes_info.ser_settings.lane_mapping[1][i]=i;
-        ad9081_dev->serdes_info.ser_settings.lane_settings[i].post_emp_setting=AD9081_SER_POST_EMP_6DB;
-        ad9081_dev->serdes_info.ser_settings.lane_settings[i].pre_emp_setting=AD9081_SER_PRE_EMP_6DB;
-        ad9081_dev->serdes_info.ser_settings.lane_settings[i].swing_setting=AD9081_SER_SWING_1000;
+void ad9082_setup(adi_ad9081_device_t *ad9081_dev, int fine, int ch, int64_t freq)
+{
+    int32_t err;
+    if(fine == 0){
+        err = adi_ad9081_dac_duc_nco_set(ad9081_dev, AD9081_DAC_0 << ch, AD9081_DAC_CH_NONE, freq);
+    }else{
+        err = adi_ad9081_dac_duc_nco_set(ad9081_dev, AD9081_DAC_NONE, AD9081_DAC_CH_0 << ch, freq);
     }
 }
 
-void ad9082_print_info(adi_ad9081_device_t *ad9081_dev)
+void print_usage()
 {
-    uint8_t reg_data;
-    adi_ad9081_hal_reg_get(ad9081_dev, 0x3, &reg_data);
-    printf("CHIP_TYPE     = %02x\n", reg_data);
-    adi_ad9081_hal_reg_get(ad9081_dev, 0x4, &reg_data);
-    printf("PROD_ID_LSB   = %02x\n", reg_data);
-    adi_ad9081_hal_reg_get(ad9081_dev, 0x5, &reg_data);
-    printf("PROD_ID_MSB   = %02x\n", reg_data);
-    adi_ad9081_hal_reg_get(ad9081_dev, 0x6, &reg_data);
-    printf("CHIP_GRADE    = %02x\n", reg_data);
-    adi_ad9081_hal_reg_get(ad9081_dev, 0xb, &reg_data);
-    printf("SPI_REVISION  = %02x\n", reg_data);
-    adi_ad9081_hal_reg_get(ad9081_dev, 0xc, &reg_data);
-    printf("VENDER_ID_LSB = %02x\n", reg_data);
-    adi_ad9081_hal_reg_get(ad9081_dev, 0xd, &reg_data);
-    printf("VENDER_ID_MSB = %02x\n", reg_data);
+    printf("usage: set_nco\n");
+    printf("\t--help          \tprint this message\n");
+    printf("\t--freq          \tset frequency(> 0)\n");
+    printf("\t--channel       \tset target channel (between 0 and 7 for fine NCO, between 0 and 3 for corase NCO)\n");
+    printf("\t--fine-mode     \tto set fine NCO(default; coarse NCO)\n");
+    printf("\t--disable-message\tsuppress human readable message\n");
 }
 
-void ad9082_setup(adi_ad9081_device_t *ad9081_dev, uint32_t freq)
+struct env {
+    int fine_mode;
+    int ch;
+    int64_t freq;
+    int disabled_messages;
+};
+
+int validate_env(struct env *e)
 {
-    uint16_t tx_gains[] = {2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000};
-    adi_ad9081_dac_duc_nco_set(ad9081_dev, AD9081_DAC_ALL, 0xFF, freq);
-    adi_ad9081_adc_nco_master_slave_sync(ad9081_dev, 0, 0, 0, 0);
-    printf("freq=%u\n", freq);
+    if(e->fine_mode == 0 && (e->ch < 0 || e->ch > 3)){
+        return 0;
+    }
+    if(e->fine_mode == 1 && (e->ch < 0 || e->ch > 7)){
+        return 0;
+    }
+    if(e->freq < 0){
+        return 0;
+    }
+    return 1;
+}
+
+void parse_arg(int argc, char **argv, struct env *e)
+{
+    e->fine_mode = 0; // coarse-mode
+    e->ch = -1; // default no-settings
+    e->freq = -1; // default no-settings
+    e->disabled_messages = 0; // enable message
+    
+    const char * optstring = "h";
+
+    enum {
+        HELP = 'h',
+        SET_FREQ,
+        FINE_MODE,
+        SET_CH,
+        DISABLE_MESSAGES,
+    };
+    
+    const struct option longopts[] = {
+        {"help",            no_argument,       0, HELP},
+        {"freq",            required_argument, 0, SET_FREQ},
+        {"fine-mode",       no_argument,       0, FINE_MODE},
+        {"channel",         required_argument, 0, SET_CH},
+        {"disable-message", no_argument,       0, DISABLE_MESSAGES},
+        {0, 0, 0, 0},
+    };
+    
+    int c, longindex;
+    while((c = getopt_long(argc, argv, optstring, longopts, &longindex)) != -1){
+        switch(c){
+        case 'h':
+            print_usage();
+            exit(0);
+            break;
+        case SET_FREQ:
+            e->freq = atoll(optarg);
+            break;
+        case FINE_MODE:
+            e->fine_mode = 1;
+            break;
+        case SET_CH:
+            e->ch = atoi(optarg);
+            break;
+        case DISABLE_MESSAGES:
+            e->disabled_messages = 1;
+            break;
+        default:
+            print_usage();
+            exit(0);
+        }
+    }
+
+    if(!e->disabled_messages){
+        printf("set_nco: freq=%ld, ch=%d, %s\n",
+               e->freq,
+               e->ch,
+               e->fine_mode == 0 ? "COARSE_MODE" : "FINE_MODE");
+    }
+
+    if(validate_env(e) == 0){
+        if(!e->disabled_messages){
+            print_usage();
+        }
+        exit(0);
+    }
 }
 
 int main(int argc, char **argv)
 {
+    struct env e;
+    parse_arg(argc, argv, &e);
+    
     adi_ad9081_device_t ad9081_dev;
     uint64_t dac_clk_hz =     12000000000;
     uint64_t adc_clk_hz =     6000000000;
@@ -71,7 +132,6 @@ int main(int argc, char **argv)
     if(val != NULL){
         target_addr = val;
     }
-    //printf("target addr:%s\n", target_addr);
     open_socket(&ad9081_dev.udp_env_info, target_addr, 16384);
 
     uint8_t rev_major, rev_minor, rev_rc;
@@ -80,13 +140,18 @@ int main(int argc, char **argv)
     adi_ad9081_device_init(&ad9081_dev);
     adi_ad9081_device_clk_config_set(&ad9081_dev, dac_clk_hz, adc_clk_hz, dev_ref_clk_hz);
 
-    ad9082_setup(&ad9081_dev, atoi(argv[1]));
-
-    ad9082_print_info(&ad9081_dev);
+    /*-- MAIN FUNCTION ------------------------------------*/
+    
+    ad9082_setup(&ad9081_dev, e.fine_mode, e.ch, e.freq);
+    
+    /*---------------------------------------------------- */
+    
+    if(!e.disabled_messages){
+        ad9082_print_info(&ad9081_dev);
+    }
 
     close_socket(&ad9081_dev.udp_env_info);
     adi_ad9081_device_hw_close(&ad9081_dev);
 
     return 0;
 }
-#endif /* SET_NCO_MAIN */

@@ -7,4 +7,7 @@ udpsendrecv
 html
 latex
 set_nco
+get_jesd_status
+set_dac_lane_mapping
+set_xbar
 .nfs*

@@ -6,79 +6,7 @@
 #define MHZ 1000000L
 #define KHZ 1000L
 
-
-void SetDevinfo(adi_ad9081_device_t *ad9081_dev){
-	int i;
-    ad9081_dev->hal_info.sdo=SPI_SDO;
-    ad9081_dev->hal_info.msb=SPI_MSB_FIRST;
-    ad9081_dev->hal_info.addr_inc=SPI_ADDR_INC_AUTO;
-
-    ad9081_dev->serdes_info.des_settings.boost_mask=0xff;
-    ad9081_dev->serdes_info.des_settings.invert_mask=0x00;
-    for(i=0;i<8;i++){
-    ad9081_dev->serdes_info.des_settings.ctle_filter[i]=0;
-    ad9081_dev->serdes_info.des_settings.lane_mapping[0][i]=i;
-    ad9081_dev->serdes_info.des_settings.lane_mapping[1][i]=i;
-    }
-    ad9081_dev->serdes_info.ser_settings.invert_mask=0x00;
-    for(i=0;i<8;i++){
-    ad9081_dev->serdes_info.ser_settings.lane_mapping[0][i]=i;
-    ad9081_dev->serdes_info.ser_settings.lane_mapping[1][i]=i;
-    ad9081_dev->serdes_info.ser_settings.lane_settings[i].post_emp_setting=AD9081_SER_POST_EMP_3DB;
-    ad9081_dev->serdes_info.ser_settings.lane_settings[i].pre_emp_setting=AD9081_SER_PRE_EMP_3DB;
-    ad9081_dev->serdes_info.ser_settings.lane_settings[i].swing_setting=AD9081_SER_SWING_850;
-    }
-
-}
-
-void ad9082_print_info(adi_ad9081_device_t *ad9081_dev)
-{
-    uint8_t reg_data;
-    adi_ad9081_hal_reg_get(ad9081_dev, 0x3, &reg_data);
-    printf("CHIP_TYPE     = %02x\n", reg_data);
-    adi_ad9081_hal_reg_get(ad9081_dev, 0x4, &reg_data);
-    printf("PROD_ID_LSB   = %02x\n", reg_data);
-    adi_ad9081_hal_reg_get(ad9081_dev, 0x5, &reg_data);
-    printf("PROD_ID_MSB   = %02x\n", reg_data);
-    adi_ad9081_hal_reg_get(ad9081_dev, 0x6, &reg_data);
-    printf("CHIP_GRADE    = %02x\n", reg_data);
-    adi_ad9081_hal_reg_get(ad9081_dev, 0xb, &reg_data);
-    printf("SPI_REVISION  = %02x\n", reg_data);
-    adi_ad9081_hal_reg_get(ad9081_dev, 0xc, &reg_data);
-    printf("VENDER_ID_LSB = %02x\n", reg_data);
-    adi_ad9081_hal_reg_get(ad9081_dev, 0xd, &reg_data);
-    printf("VENDER_ID_MSB = %02x\n", reg_data);
-}
-
-int ad9082_chip()
-{
-    char *val;
-    val = getenv("AD9082_CHIP");
-    int chip = 0;
-    if(val != NULL && strcmp(val, "1") == 0){
-        chip = 1;
-    }
-    return chip;
-}
-
-int ad9082_adc_scramble()
-{
-    int flag = 1; // default enable
-    char *val;
-    val = getenv("AD9082_ADC_SCRAMBLE");
-    if(val != NULL && strcmp(val, "0") == 0){
-        flag = 0; // disabled if defiend and '0'
-    }
-    return flag;
-}
-
-void print_reg(adi_ad9081_device_t *ad9081_dev, int addr)
-{
-    uint8_t reg_data;
-    adi_ad9081_hal_reg_get(ad9081_dev, addr, &reg_data);
-    printf("0x%04X = 0x%02X\n", addr, reg_data);
-}
-
+#include "util.h"
 
 int main()
 {
@@ -99,37 +27,20 @@ int main()
     if(val != NULL){
         target_addr = val;
     }
-    //printf("target addr:%s\n", target_addr);
     open_socket(&ad9081_dev.udp_env_info, target_addr, 16384);
-    //printf("%d>", step++); getchar();
 
     SetDevinfo(&ad9081_dev);
     adi_ad9081_hal_reg_get(&ad9081_dev, 0x4, &reg_data);
     printf("0x4=%X\n", reg_data);
     adi_ad9081_device_reset(&ad9081_dev, AD9081_SOFT_RESET);
-    //printf("%d>", step++); getchar();
-/*
-    do{
-      adi_ad9081_hal_reg_get(&ad9081_dev, 0x4, &reg_data);
-      printf("0x4=%X\n", reg_data);
-      sleep(1);
-    }while(reg_data != 0x82);
-*/
 
     adi_ad9081_device_init(&ad9081_dev);
-    //printf("%d>", step++); getchar();
-//return 0; // ok
-#if 1
+
     adi_ad9081_device_clk_config_set(&ad9081_dev,dac_clk_hz, adc_clk_hz,dev_ref_clk_hz);
     adi_ad9081_hal_reg_get(&ad9081_dev, 0x4, &reg_data);
     printf("0x4=%X\n", reg_data);
-//return 0; // dame
-#endif
-    //printf("%d>", step++); getchar();
 
     /******    DAC-Setup   ********/
-    //uint8_t tx_main_interp = 4;
-    //uint8_t tx_chan_interp = 6;
     uint8_t tx_main_interp = 6;
     uint8_t tx_chan_interp = 4;
     uint8_t tx_dac_chan[] = {0x01, 0x02, 0x1C, 0xE0};
@@ -166,14 +77,12 @@ int main()
 
     adi_ad9081_device_startup_tx(&ad9081_dev, tx_main_interp, tx_chan_interp,
     tx_dac_chan, tx_main_shift, tx_chan_shift, jrx_param);
-    //printf("%d>", step++); getchar();
 
     for(i=0;i<8;i++)
     	adi_ad9081_jesd_rx_lane_xbar_set(&ad9081_dev, AD9081_LINK_0,i, i);
 
     adi_ad9081_hal_reg_set(&ad9081_dev, 0x401,0x00);
     adi_ad9081_jesd_rx_link_enable_set(&ad9081_dev, AD9081_LINK_0, 1);
-    //printf("+%d>", step++); getchar();
     
     adi_ad9081_hal_reg_set(&ad9081_dev, 0x01B,0x0F);// morisaka-220118  DAC-mask
     adi_ad9081_hal_reg_set(&ad9081_dev, 0x117,0xA0);// morisaka-220118  fullscale-current
@@ -204,30 +113,24 @@ int main()
 
     adi_ad9081_device_startup_rx(&ad9081_dev, rx_cddc_select, rx_fddc_select,cdcc_shift,fdcc_shift,
     		cddc_dcm, fddc_dcm, rx_cddc_c2r, rx_fddc_c2r, jtx_param,jesd_conv_sel);
-    //printf("*%d>", step++); getchar();
 
     uint8_t lane[]={0,1,2,3,4,5,6,7};
     adi_ad9081_jesd_tx_lanes_xbar_set(&ad9081_dev, AD9081_LINK_0, lane);
-    //printf("**%d>", step++); getchar();
 
     uint8_t lid[]={0,0,0,0,0,0,0,0};
     adi_ad9081_jesd_tx_lids_cfg_set(&ad9081_dev, AD9081_LINK_0, lid);
-    //printf("***%d>", step++); getchar();
     adi_ad9081_jesd_tx_link_enable_set(&ad9081_dev, AD9081_LINK_0, 1);
-    //printf("****%d>", step++); getchar();
     
     /******    GTH - reset   ********/
     adi_ad9081_hal_reg_set(&ad9081_dev, 0x5BB, 0x00);
     adi_ad9081_hal_reg_set(&ad9081_dev, 0x5BB, 0x01);
-    //printf("%d>", step++); getchar();
-    for(i=0;i<8;i++){
 
+    for(i=0;i<8;i++){
     	adi_ad9081_hal_reg_get(&ad9081_dev,0x55E,&reg_data);
     	printf("0x55E=%X\n",reg_data);
         adi_ad9081_hal_reg_get(&ad9081_dev, 0x5BB, &reg_data);
         printf("0x5BB=%X\n", reg_data);
         usleep(100000);
-
     }
     for(int i = 0; i < 8; i++){
         print_reg(&ad9081_dev, 0x670+i);

@@ -1,6 +1,16 @@
+LIBRARIES = adi_ad9081_adc.c \
+            adi_ad9081_dac.c \
+            adi_ad9081_device.c \
+            adi_ad9081_hal.c \
+            adi_ad9081_jesd.c \
+            axi_gpio.c \
+            axi_gpio_spi_i2c.c \
+            udpsendrecv.c \
+            util.c
+
 all: hello gpio spi_i2c udpsendrecv
 
-hello: *.c
+hello: ${LIBRARIES} helloworld.c
 	gcc -o $@ $^
 
 gpio: axi_gpio.c
@@ -20,4 +30,3 @@ clean:
 	-rm -f spi_i2c
 	-rm -f hello
 	-rm -f udpsendrecv
-
