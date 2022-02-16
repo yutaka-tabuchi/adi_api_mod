@@ -12,3 +12,5 @@ set_dac_lane_mapping
 set_xbar
 print_ad9082_info
 .nfs*
+*.egg-info
+build
