@@ -10,32 +10,32 @@
 #include "udpsendrecv.h"
 #include "util.h"
 
-void ad9082_setup(adi_ad9081_device_t *ad9081_dev, int fine, int ch, int64_t freq)
+struct env {
+    int disabled_messages;
+    int fine_mode;
+    int ch;
+    int64_t freq;
+};
+
+void ad9082_setup(adi_ad9081_device_t *ad9081_dev, struct env *e)
 {
     int32_t err;
-    if(fine == 0){
-        err = adi_ad9081_dac_duc_nco_set(ad9081_dev, AD9081_DAC_0 << ch, AD9081_DAC_CH_NONE, freq);
+    if(e->fine_mode == 0){
+        err = adi_ad9081_dac_duc_nco_set(ad9081_dev, AD9081_DAC_0 << e->ch, AD9081_DAC_CH_NONE, e->freq);
     }else{
-        err = adi_ad9081_dac_duc_nco_set(ad9081_dev, AD9081_DAC_NONE, AD9081_DAC_CH_0 << ch, freq);
+        err = adi_ad9081_dac_duc_nco_set(ad9081_dev, AD9081_DAC_NONE, AD9081_DAC_CH_0 << e->ch, e->freq);
     }
 }
 
 void print_usage()
 {
     printf("usage: set_nco\n");
-    printf("\t--help          \tprint this message\n");
-    printf("\t--freq          \tset frequency(> 0)\n");
-    printf("\t--channel       \tset target channel (between 0 and 7 for fine NCO, between 0 and 3 for corase NCO)\n");
-    printf("\t--fine-mode     \tto set fine NCO(default; coarse NCO)\n");
+    printf("\t--help           \tprint this message\n");
+    printf("\t--freq           \tset frequency(> 0)\n");
+    printf("\t--channel        \tset target channel (between 0 and 7 for fine NCO, between 0 and 3 for corase NCO)\n");
+    printf("\t--fine-mode      \tto set fine NCO(default; coarse NCO)\n");
     printf("\t--disable-message\tsuppress human readable message\n");
 }
-
-struct env {
-    int fine_mode;
-    int ch;
-    int64_t freq;
-    int disabled_messages;
-};
 
 int validate_env(struct env *e)
 {
@@ -62,18 +62,18 @@ void parse_arg(int argc, char **argv, struct env *e)
 
     enum {
         HELP = 'h',
+        DISABLE_MESSAGES,
         SET_FREQ,
         FINE_MODE,
         SET_CH,
-        DISABLE_MESSAGES,
     };
     
     const struct option longopts[] = {
         {"help",            no_argument,       0, HELP},
+        {"disable-message", no_argument,       0, DISABLE_MESSAGES},
         {"freq",            required_argument, 0, SET_FREQ},
         {"fine-mode",       no_argument,       0, FINE_MODE},
         {"channel",         required_argument, 0, SET_CH},
-        {"disable-message", no_argument,       0, DISABLE_MESSAGES},
         {0, 0, 0, 0},
     };
     
@@ -84,6 +84,9 @@ void parse_arg(int argc, char **argv, struct env *e)
             print_usage();
             exit(0);
             break;
+        case DISABLE_MESSAGES:
+            e->disabled_messages = 1;
+            break;
         case SET_FREQ:
             e->freq = atoll(optarg);
             break;
@@ -92,9 +95,6 @@ void parse_arg(int argc, char **argv, struct env *e)
             break;
         case SET_CH:
             e->ch = atoi(optarg);
-            break;
-        case DISABLE_MESSAGES:
-            e->disabled_messages = 1;
             break;
         default:
             print_usage();
@@ -141,9 +141,7 @@ int main(int argc, char **argv)
     adi_ad9081_device_clk_config_set(&ad9081_dev, dac_clk_hz, adc_clk_hz, dev_ref_clk_hz);
 
     /*-- MAIN FUNCTION ------------------------------------*/
-    
-    ad9082_setup(&ad9081_dev, e.fine_mode, e.ch, e.freq);
-    
+    ad9082_setup(&ad9081_dev, &e);
     /*---------------------------------------------------- */
     
     if(!e.disabled_messages){

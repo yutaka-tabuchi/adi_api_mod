@@ -1,16 +1,110 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <getopt.h>
 
 #include "adi_ad9081_config.h"
 #include "adi_ad9081_hal.h"
 #define MHZ 1000000
 
 #include "util.h"
-#include "udpsendrecv.h"
+
+struct env {
+    int disabled_messages;
+    int ch;
+    int value;
+};
+
+void ad9082_setup(adi_ad9081_device_t *ad9081_dev, struct env *e)
+{
+    int32_t err;
+    err = adi_ad9081_dac_xbar_set(ad9081_dev, AD9081_DAC_0 << e->ch, e->value);
+}
+
+void print_usage()
+{
+    printf("usage: set_xbar\n");
+    printf("\t--help           \tprint this message\n");
+    printf("\t--channel        \tset target channel (between 0 and 3)\n");
+    printf("\t--value          \tassign digital channel mask(hex string, between 00 to FF)\n");
+    printf("\t--disable-message\tsuppress human readable message\n");
+}
+
+int validate_env(struct env *e)
+{
+    if(e->ch < 0 || e->ch > 3){
+        return 0;
+    }
+    if(e->value < 0 || e->value > 255){
+        return 0;
+    }
+    return 1;
+}
+
+void parse_arg(int argc, char **argv, struct env *e)
+{
+    e->disabled_messages = 0; // enable message
+    e->ch = -1; // default no-settings
+    e->value = -1; // default no-settings
+    
+    const char * optstring = "h";
+
+    enum {
+        HELP = 'h',
+        DISABLE_MESSAGES,
+        SET_CH,
+        SET_VALUE,
+    };
+    
+    const struct option longopts[] = {
+        {"help",            no_argument,       0, HELP},
+        {"disable-message", no_argument,       0, DISABLE_MESSAGES},
+        {"channel",         required_argument, 0, SET_CH},
+        {"value",           required_argument, 0, SET_VALUE},
+        {0, 0, 0, 0},
+    };
+    
+    int c, longindex;
+    while((c = getopt_long(argc, argv, optstring, longopts, &longindex)) != -1){
+        switch(c){
+        case 'h':
+            print_usage();
+            exit(0);
+            break;
+        case DISABLE_MESSAGES:
+            e->disabled_messages = 1;
+            break;
+        case SET_CH:
+            e->ch = atoi(optarg);
+            break;
+        case SET_VALUE: {
+            char *endptr;
+            e->value = (int)strtol(optarg, &endptr, 16);
+        }
+            break;
+        default:
+            print_usage();
+            exit(0);
+        }
+    }
+
+    if(!e->disabled_messages){
+        printf("set_nco: ch=%d, value=%02x\n", e->ch, e->value);
+    }
+
+    if(validate_env(e) == 0){
+        if(!e->disabled_messages){
+            print_usage();
+        }
+        exit(0);
+    }
+}
 
 int main(int argc, char **argv)
 {
+    struct env e;
+    parse_arg(argc, argv, &e);
+
     adi_ad9081_device_t ad9081_dev;
     uint64_t dac_clk_hz =     12000000000;
     uint64_t adc_clk_hz =     3000000000;
@@ -30,19 +124,13 @@ int main(int argc, char **argv)
     adi_ad9081_device_init(&ad9081_dev);
     adi_ad9081_device_clk_config_set(&ad9081_dev, dac_clk_hz, adc_clk_hz, dev_ref_clk_hz);
 
-    int status;
-    int value = atoi(argv[1]);
+    /*-- MAIN FUNCTION ------------------------------------*/
+    ad9082_setup(&ad9081_dev, &e);
+    /*---------------------------------------------------- */
 
-    status = adi_ad9081_dac_xbar_set(&ad9081_dev, AD9081_DAC_0, value);
-    printf("status=%d\n", status);
-    status = adi_ad9081_dac_xbar_set(&ad9081_dev, AD9081_DAC_1, value);
-    printf("status=%d\n", status);
-    status = adi_ad9081_dac_xbar_set(&ad9081_dev, AD9081_DAC_2, value);
-    printf("status=%d\n", status);
-    status = adi_ad9081_dac_xbar_set(&ad9081_dev, AD9081_DAC_3, value);
-    printf("status=%d\n", status);
-
-    ad9082_print_info(&ad9081_dev);
+    if(!e.disabled_messages){
+        ad9082_print_info(&ad9081_dev);
+    }
 
     close_socket(&ad9081_dev.udp_env_info);
     adi_ad9081_device_hw_close(&ad9081_dev);
