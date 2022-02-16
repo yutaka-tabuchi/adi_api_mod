@@ -1,13 +1,10 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <getopt.h>
 
 #include "adi_ad9081_config.h"
 #include "adi_ad9081_hal.h"
-#define MHZ 1000000
-
-#include "udpsendrecv.h"
+#define MHZ 1000000L
+#define KHZ 1000L
 
 #include "util.h"
 
@@ -28,9 +25,9 @@ void SetDevinfo(adi_ad9081_device_t *ad9081_dev){
     for(i=0;i<8;i++){
         ad9081_dev->serdes_info.ser_settings.lane_mapping[0][i]=i;
         ad9081_dev->serdes_info.ser_settings.lane_mapping[1][i]=i;
-        ad9081_dev->serdes_info.ser_settings.lane_settings[i].post_emp_setting=AD9081_SER_POST_EMP_6DB;
-        ad9081_dev->serdes_info.ser_settings.lane_settings[i].pre_emp_setting=AD9081_SER_PRE_EMP_6DB;
-        ad9081_dev->serdes_info.ser_settings.lane_settings[i].swing_setting=AD9081_SER_SWING_1000;
+        ad9081_dev->serdes_info.ser_settings.lane_settings[i].post_emp_setting=AD9081_SER_POST_EMP_3DB;
+        ad9081_dev->serdes_info.ser_settings.lane_settings[i].pre_emp_setting=AD9081_SER_PRE_EMP_3DB;
+        ad9081_dev->serdes_info.ser_settings.lane_settings[i].swing_setting=AD9081_SER_SWING_850;
     }
 }
 
@@ -62,6 +59,17 @@ int ad9082_chip()
         chip = 1;
     }
     return chip;
+}
+
+int ad9082_adc_scramble()
+{
+    int flag = 1; // default enable
+    char *val;
+    val = getenv("AD9082_ADC_SCRAMBLE");
+    if(val != NULL && strcmp(val, "0") == 0){
+        flag = 0; // disabled if defiend and '0'
+    }
+    return flag;
 }
 
 void print_reg(adi_ad9081_device_t *ad9081_dev, int addr)

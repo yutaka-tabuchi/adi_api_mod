@@ -17,19 +17,18 @@ void SetDevinfo(adi_ad9081_device_t *ad9081_dev){
     ad9081_dev->serdes_info.des_settings.boost_mask=0xff;
     ad9081_dev->serdes_info.des_settings.invert_mask=0x00;
     for(i=0;i<8;i++){
-    ad9081_dev->serdes_info.des_settings.ctle_filter[i]=0;
-    ad9081_dev->serdes_info.des_settings.lane_mapping[0][i]=i;
-    ad9081_dev->serdes_info.des_settings.lane_mapping[1][i]=i;
+        ad9081_dev->serdes_info.des_settings.ctle_filter[i]=0;
+        ad9081_dev->serdes_info.des_settings.lane_mapping[0][i]=i;
+        ad9081_dev->serdes_info.des_settings.lane_mapping[1][i]=i;
     }
     ad9081_dev->serdes_info.ser_settings.invert_mask=0x00;
     for(i=0;i<8;i++){
-    ad9081_dev->serdes_info.ser_settings.lane_mapping[0][i]=i;
-    ad9081_dev->serdes_info.ser_settings.lane_mapping[1][i]=i;
-    ad9081_dev->serdes_info.ser_settings.lane_settings[i].post_emp_setting=AD9081_SER_POST_EMP_3DB;
-    ad9081_dev->serdes_info.ser_settings.lane_settings[i].pre_emp_setting=AD9081_SER_PRE_EMP_3DB;
-    ad9081_dev->serdes_info.ser_settings.lane_settings[i].swing_setting=AD9081_SER_SWING_850;
+        ad9081_dev->serdes_info.ser_settings.lane_mapping[0][i]=i;
+        ad9081_dev->serdes_info.ser_settings.lane_mapping[1][i]=i;
+        ad9081_dev->serdes_info.ser_settings.lane_settings[i].post_emp_setting=AD9081_SER_POST_EMP_3DB;
+        ad9081_dev->serdes_info.ser_settings.lane_settings[i].pre_emp_setting=AD9081_SER_PRE_EMP_3DB;
+        ad9081_dev->serdes_info.ser_settings.lane_settings[i].swing_setting=AD9081_SER_SWING_850;
     }
-
 }
 
 void ad9082_print_info(adi_ad9081_device_t *ad9081_dev)
