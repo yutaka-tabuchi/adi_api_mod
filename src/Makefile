@@ -8,7 +8,17 @@ LIBRARIES = adi_ad9081_jesd.c \
             udpsendrecv.c \
             util.c
 
-all: hello gpio spi_i2c udpsendrecv set_nco set_xbar set_dac_lane_mapping get_jesd_status
+TARGETS = hello \
+          gpio \
+          spi_i2c \
+          udpsendrecv \
+          set_nco \
+          set_xbar \
+          set_dac_lane_mapping \
+          get_jesd_status \
+          print_ad9082_info
+
+all: ${TARGETS}
 
 
 hello: ${LIBRARIES} helloworld.c
@@ -33,6 +43,9 @@ set_dac_lane_mapping: ${LIBRARIES} set_dac_lane_mapping.c
 	gcc -O0 -o $@ $^
 
 get_jesd_status: ${LIBRARIES} get_jesd_status.c
+	gcc -O0 -o $@ $^
+
+print_ad9082_info: ${LIBRARIES} print_ad9082_info.c
 	gcc -O0 -o $@ $^
 
 .PHONY: clean 
