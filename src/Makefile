@@ -24,16 +24,16 @@ udpsendrecv: udpsendrecv.c
 	gcc -O0 -DUDPSENDRECV_MAIN -o $@ $^
 
 set_nco: ${LIBRARIES} set_nco.c
-	gcc -DSET_NCO_MAIN -O0 -o $@ $^
+	gcc -O0 -o $@ $^
 
 set_xbar: ${LIBRARIES} set_xbar.c
-	gcc -DSET_XBAR_MAIN -O0 -o $@ $^
+	gcc -O0 -o $@ $^
 
 set_dac_lane_mapping: ${LIBRARIES} set_dac_lane_mapping.c
-	gcc -DSET_XBAR_MAIN -O0 -o $@ $^
+	gcc -O0 -o $@ $^
 
 get_jesd_status: ${LIBRARIES} get_jesd_status.c
-	gcc -DGET_JESD_STATUS -O0 -o $@ $^
+	gcc -O0 -o $@ $^
 
 .PHONY: clean 
 

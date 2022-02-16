@@ -84,19 +84,19 @@ int main()
     adi_ad9081_hal_reg_set(&ad9081_dev, 0x401,0x00);
     adi_ad9081_jesd_rx_link_enable_set(&ad9081_dev, AD9081_LINK_0, 1);
     
-    adi_ad9081_hal_reg_set(&ad9081_dev, 0x01B,0x0F);// morisaka-220118  DAC-mask
-    adi_ad9081_hal_reg_set(&ad9081_dev, 0x117,0xA0);// morisaka-220118  fullscale-current
-    adi_ad9081_hal_reg_set(&ad9081_dev, 0x118,0xFF);// morisaka-220118  fullscale-current
+    adi_ad9081_hal_reg_set(&ad9081_dev, 0x01B,0x0F);// DAC-mask
+    adi_ad9081_hal_reg_set(&ad9081_dev, 0x117,0xA0);// fullscale-current
+    adi_ad9081_hal_reg_set(&ad9081_dev, 0x118,0xFF);// fullscale-current
 
     /******    ADC-Setup   ********/
     uint8_t rx_cddc_select = AD9081_ADC_CDDC_ALL;
     uint8_t rx_fddc_select = AD9081_ADC_FDDC_ALL;
-    int64_t cdcc_val, fdcc_val;
-    cdcc_val = 1164000000;
+    int64_t cddc_val, fdcc_val;
+    cddc_val = 1164000000;
     fdcc_val = 0;
-    int64_t cdcc_shift[]={cdcc_val, cdcc_val, cdcc_val, cdcc_val};
+    int64_t cddc_shift[]={cddc_val, cddc_val, cddc_val, cddc_val};
     int64_t fdcc_shift[]={fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val}; 
-    uint8_t cddc_dcm[] = { AD9081_CDDC_DCM_6,AD9081_CDDC_DCM_6,AD9081_CDDC_DCM_6,AD9081_CDDC_DCM_6};
+    uint8_t cddc_dcm[] = {AD9081_CDDC_DCM_6,AD9081_CDDC_DCM_6,AD9081_CDDC_DCM_6,AD9081_CDDC_DCM_6};
     uint8_t fddc_dcm[]={AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2,AD9081_FDDC_DCM_2};
     uint8_t rx_cddc_c2r[]={0,0,0,0};
     uint8_t rx_fddc_c2r[]={0,0,0,0,0,0,0,0};
@@ -111,7 +111,7 @@ int main()
     }
     adi_ad9081_jtx_conv_sel_t jesd_conv_sel[2]={{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15},{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}};
 
-    adi_ad9081_device_startup_rx(&ad9081_dev, rx_cddc_select, rx_fddc_select,cdcc_shift,fdcc_shift,
+    adi_ad9081_device_startup_rx(&ad9081_dev, rx_cddc_select, rx_fddc_select,cddc_shift,fdcc_shift,
     		cddc_dcm, fddc_dcm, rx_cddc_c2r, rx_fddc_c2r, jtx_param,jesd_conv_sel);
 
     uint8_t lane[]={0,1,2,3,4,5,6,7};
