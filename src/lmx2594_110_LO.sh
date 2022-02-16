@@ -37,7 +37,7 @@ do
 ./udpsendrecv lmx2594 w $i 2F 0300
 ./udpsendrecv lmx2594 w $i 2E 07FD # R46 [1:0] OUTB_MUX=1(=VCO)
 ./udpsendrecv lmx2594 w $i 2D C8DF # R45 [5:0] OUTB_PWR=1F
-./udpsendrecv lmx2594 w $i 2C 32A0 # R44  3220
+./udpsendrecv lmx2594 w $i 2C 3220 # R44  3220
 ./udpsendrecv lmx2594 w $i 2B 0000
 ./udpsendrecv lmx2594 w $i 2A 0000
 ./udpsendrecv lmx2594 w $i 29 0000
@@ -45,7 +45,7 @@ do
 ./udpsendrecv lmx2594 w $i 27 0001
 ./udpsendrecv lmx2594 w $i 26 0000
 ./udpsendrecv lmx2594 w $i 25 0204
-./udpsendrecv lmx2594 w $i 24 0078 # 120
+./udpsendrecv lmx2594 w $i 24 006e # 110
 ./udpsendrecv lmx2594 w $i 23 0004
 ./udpsendrecv lmx2594 w $i 22 0000
 ./udpsendrecv lmx2594 w $i 21 1E21
