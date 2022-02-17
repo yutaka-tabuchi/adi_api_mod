@@ -15,3 +15,9 @@ class ADRF6780:
 
     def set_lsb(self):
         return self.handle.write_adrf6780(self.chip, 0x5, 0x0400)
+
+    def write_value(self, addr, value):
+        return self.handle.write_adrf6780(self.chip, addr, value)
+
+    def read_value(self, addr):
+        return self.handle.read_adrf6780(self.chip, addr)

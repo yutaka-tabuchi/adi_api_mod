@@ -1,12 +1,15 @@
 import os
 import subprocess
 
+import qube_lsi.udpsendrecv
+
 class AD9082:
 
     def __init__(self, addr, path, chip):
         self.addr = addr
         self.chip = str(chip)
         self.path = path
+        self.handle = qube_lsi.udpsendrecv.UDPSendRecv(addr, path)
 
     def _setenv(self):
         os.environ['TARGET_ADDR'] = self.addr
@@ -29,3 +32,9 @@ class AD9082:
             cmd.append("--fine_mode")
         ret = subprocess.check_output(cmd, encoding='utf-8')
         return ret
+
+    def write_value(self, addr, value):
+        return self.handle.write_ad9082(self.chip, addr, value)
+
+    def read_value(self, addr):
+        return self.handle.read_ad9082(self.chip, addr)

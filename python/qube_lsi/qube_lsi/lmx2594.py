@@ -12,3 +12,9 @@ class LMX2594:
 
     def write_freq_100M(self, value):
         return self.handle.write_lmx2594(self.chip, 0x24, value)
+
+    def write_value(self, addr, value):
+        return self.handle.write_lmx2594(self.chip, addr, value)
+
+    def read_value(self, addr):
+        return self.handle.read_lmx2594(self.chip, addr)
