@@ -11,7 +11,7 @@ make
 
 ## Example
 
-See [python/qubelsi/README.md].
+See (python/qubelsi/README.md).
 
 
 ## Examples to use each command
