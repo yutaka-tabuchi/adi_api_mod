@@ -5,15 +5,24 @@
 ```
 cd src
 make
+cd ../src/v1.0.6/src
+make
 ```
 
 ## Example
+
+See [python/qubelsi/README.md].
+
+
+## Examples to use each command
+
+### AD9082 setup
 
 ```
 AD9082_CHIP=1 TARGET_ADDRESS=10.5.0.1 ./hello
 ```
 
-## 設定スクリプト・プログラム
+### misc. configuration programs and scripts
 
 - 環境変数 `TARGET_ADDR` で，対象のQuBEユニットのIPアドレスを指定して使う
 

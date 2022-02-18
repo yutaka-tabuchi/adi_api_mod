@@ -15,12 +15,14 @@ For example,
 
 ## Example
 
+### Access LSIs in QuBE
+
 ```
 % cd ${PIPENVDIR}
 % pipenv shell
 % python
 >>> import qubelsi.qube
->>> q = qubelsi.qube.Qube("10.5.0.14", "/home/miyo/adi_api_mod/src")
+>>> q = qubelsi.qube.Qube("10.5.0.14", "/home/miyo/adi_api_mod/")
 >>> q
 <qubelsi.qube.Qube object at 0x7f22e6d2d880>
 >>> q.ad9082
@@ -57,3 +59,16 @@ VENDER_ID_MSB = 04
 
 ```
 
+### Initialization
+
+```
+>>> q = qubelsi.qube.Qube("10.5.0.14", "/home/miyo/adi_api_mod/")
+>>> q.do_init() # without FPGA configuration
+>>> q.do_init(bitfile="hoge.bit") # FPGA configuration with hoge.bit
+                                  # required Vivado settings
+>>> q.ad9082[0].get_jesd_status()
+[['0x55E', '0xE0'], ['0x5BB', '0x01'], ['0x62E', '0x01'], ['pll_status', '0x01'], ['0x728', '0x0B']]
+>>> q.ad9082[1].get_jesd_status()
+[['0x55E', '0xE0'], ['0x5BB', '0x01'], ['0x62E', '0x01'], ['pll_status', '0x01'], ['0x728', '0x0B']]
+>>> 
+```
