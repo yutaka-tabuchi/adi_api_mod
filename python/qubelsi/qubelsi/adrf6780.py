@@ -1,10 +1,9 @@
-
-import qube_lsi.udpsendrecv
+import qubelsi.udpsendrecv
 
 class ADRF6780:
 
     def __init__(self, addr, path, chip):
-        self.handle = qube_lsi.udpsendrecv.UDPSendRecv(addr, path)
+        self.handle = qubelsi.udpsendrecv.UDPSendRecv(addr, path)
         self.chip = chip
 
     def read_mode(self):

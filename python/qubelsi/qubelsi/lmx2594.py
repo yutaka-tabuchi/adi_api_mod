@@ -1,10 +1,9 @@
-
-import qube_lsi.udpsendrecv
+import qubelsi.udpsendrecv
 
 class LMX2594:
 
     def __init__(self, addr, path, chip):
-        self.handle = qube_lsi.udpsendrecv.UDPSendRecv(addr, path)
+        self.handle = qubelsi.udpsendrecv.UDPSendRecv(addr, path)
         self.chip = chip
 
     def read_freq_100M(self):

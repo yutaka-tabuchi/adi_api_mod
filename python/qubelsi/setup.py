@@ -1,7 +1,7 @@
 import setuptools
  
 setuptools.setup(
-    name="qube_lsi",
+    name="qubelsi",
     version="1.0",
     author="miyo",
     author_email="miyo@wasamon.net",

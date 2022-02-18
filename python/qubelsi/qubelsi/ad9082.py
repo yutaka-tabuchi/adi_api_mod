@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-import qube_lsi.udpsendrecv
+import qubelsi.udpsendrecv
 
 class AD9082:
 
@@ -9,7 +9,7 @@ class AD9082:
         self.addr = addr
         self.chip = str(chip)
         self.path = path
-        self.handle = qube_lsi.udpsendrecv.UDPSendRecv(addr, path)
+        self.handle = qubelsi.udpsendrecv.UDPSendRecv(addr, path)
 
     def _setenv(self):
         os.environ['TARGET_ADDR'] = self.addr

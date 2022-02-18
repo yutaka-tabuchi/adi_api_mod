@@ -1,10 +1,10 @@
 
-import qube_lsi.udpsendrecv
+import qubelsi.udpsendrecv
 
 class AD5328:
 
     def __init__(self, addr, path):
-        self.handle = qube_lsi.udpsendrecv.UDPSendRecv(addr, path)
+        self.handle = qubelsi.udpsendrecv.UDPSendRecv(addr, path)
 
     def write_values(self, values):
         for i,v in enumerate(value[:8]):
