@@ -56,8 +56,8 @@ lmx2594_f_w.sh ID VAL
 rfswitch.sh
 :  RFスイッチのON/OFFをセットする
 
-set_nco VAL
-:  AD9082のNCOの周波数をVALにセットする．VALは周波数(たとえば2GHzなら 2000000000)
+set_nco
+:  AD9082のNCOの周波数をセットする．詳細はコマンド実行時のヘルプメッセージを参照のこと
 :  どちらのAD9082に値をセットしたいかは環境変数 `AD9082_CHIP` で指定
 
 udpsendrecv
