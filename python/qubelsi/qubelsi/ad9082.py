@@ -17,12 +17,12 @@ class AD9082:
     
     def read_info(self):
         self._setenv()
-        ret = subprocess.check_output("{}/print_ad9082_info".format(self.path), encoding='utf-8')
+        ret = subprocess.check_output("{}/src/print_ad9082_info".format(self.path), encoding='utf-8')
         return ret
 
     def set_nco(self, freq, ch, adc_mode=False, fine_mode=False):
         self._setenv()
-        cmd = ["{}/set_nco".format(self.path),
+        cmd = ["{}/src/set_nco".format(self.path),
                "--channel={}".format(ch),
                "--freq={}".format(freq),
         ]
@@ -35,7 +35,7 @@ class AD9082:
 
     def get_jesd_status(self):
         self._setenv()
-        ret = subprocess.check_output("{}/get_jesd_status".format(self.path), encoding='utf-8')
+        ret = subprocess.check_output("{}/src/get_jesd_status".format(self.path), encoding='utf-8')
         return [x for x in [x.split('=') for x in ret.split('\n')] if len(x) == 2]
 
     def write_value(self, addr, value):
@@ -46,6 +46,6 @@ class AD9082:
 
     def do_init(self, message_out=False):
         self._setenv()
-        ret = subprocess.check_output("{}/../v1.0.6/src/hello".format(self.path), encoding='utf-8')
+        ret = subprocess.check_output("{}/v1.0.6/src/hello".format(self.path), encoding='utf-8')
         if message_out:
             print(ret)

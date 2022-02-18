@@ -22,6 +22,13 @@ class Qube:
         self.rf_type = 'as is'
 
     def do_init(self, rf_type='A', bitfile=None, message_out=False):
+        
+        if not bitfile is None:
+            if os.path.exists(bitfile) == False:
+                raise RuntimeError("Error: target bitfile {} is not found".format(bitfile))
+            if not 'Vivado' in os.environ['PATH']:
+                raise RuntimeError("Error: Vivado is not found".format(bitfile))
+        
         self.rf_type = rf_type
         # LMX2594 for ctrl/readout
         if message_out:
@@ -55,7 +62,7 @@ class Qube:
             if message_out:
                 print("init FPGA")
             os.environ['BITFILE'] = bitfile
-            commands = ["vivado", "-mode", "batch", "-source", "{}/config.tcl".format(self.path)]
+            commands = ["vivado", "-mode", "batch", "-source", "{}/utils/config.tcl".format(self.path)]
             ret = subprocess.check_output(commands , encoding='utf-8')
             if message_out:
                 print(ret)

@@ -5,7 +5,10 @@ class UDPSendRecv:
 
     def __init__(self, addr, path):
         self.addr = addr
-        self.cmd = "{}/udpsendrecv".format(path)
+        self.path = path
+        self.cmd = "{}/src/udpsendrecv".format(self.path)
+        if os.path.exists(self.cmd) == False:
+            raise RuntimeError("Error: udpsendrecv is not in {}".format(self.path))
 
     def _setenv(self):
         os.environ['TARGET_ADDR'] = self.addr
