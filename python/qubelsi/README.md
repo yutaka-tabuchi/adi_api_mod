@@ -10,7 +10,7 @@ For example,
 % git clone git@github.com:qiqb-osaka/adi_api_mod.git # or use SSH
 % cd ${PIPENVDIR}
 % pipenv shell
-% pipenv install ${TMPDIR}/python/qube_lsi
+% pipenv install ${TMPDIR}/python/qubelsi
 ```
 
 ## Example
@@ -19,12 +19,12 @@ For example,
 % cd ${PIPENVDIR}
 % pipenv shell
 % python
->>> import qube_lsi.qube
->>> q = qube_lsi.qube.Qube("10.5.0.14", "/home/miyo/adi_api_mod/src")
+>>> import qubelsi.qube
+>>> q = qubelsi.qube.Qube("10.5.0.14", "/home/miyo/adi_api_mod/src")
 >>> q
-<qube_lsi.qube.Qube object at 0x7f22e6d2d880>
+<qubelsi.qube.Qube object at 0x7f22e6d2d880>
 >>> q.ad9082
-[<qube_lsi.ad9082.AD9082 object at 0x7f22e6d2dbb0>, <qube_lsi.ad9082.AD9082 object at 0x7f22e6d2dc70>]
+[<qubelsi.ad9082.AD9082 object at 0x7f22e6d2dbb0>, <qubelsi.ad9082.AD9082 object at 0x7f22e6d2dc70>]
 >>> print(q.ad9082[0].read_info())
 CHIP_TYPE     = 0f
 PROD_ID_LSB   = 82
@@ -42,15 +42,15 @@ VENDER_ID_LSB = 56
 VENDER_ID_MSB = 04
 
 >>> q.lmx2594
-[<qube_lsi.lmx2594.LMX2594 object at 0x7f22e6d2dca0>, ..., <qube_lsi.lmx2594.LMX2594 object at 0x7f22e6c69040>]
+[<qubelsi.lmx2594.LMX2594 object at 0x7f22e6d2dca0>, ..., <qubelsi.lmx2594.LMX2594 object at 0x7f22e6c69040>]
 >>> q.lmx2594_ad9082
-[<qube_lsi.lmx2594.LMX2594 object at 0x7f22e6d2da90>, <qube_lsi.lmx2594.LMX2594 object at 0x7f22e6c691c0>]
+[<qubelsi.lmx2594.LMX2594 object at 0x7f22e6d2da90>, <qubelsi.lmx2594.LMX2594 object at 0x7f22e6c691c0>]
 >>> q.adrf6780
-[<qube_lsi.adrf6780.ADRF6780 object at 0x7f22e6c69100>, ..., <qube_lsi.adrf6780.ADRF6780 object at 0x7f22e6c697c0>]
+[<qubelsi.adrf6780.ADRF6780 object at 0x7f22e6c69100>, ..., <qubelsi.adrf6780.ADRF6780 object at 0x7f22e6c697c0>]
 >>> q.ad5328
-<qube_lsi.ad5328.AD5328 object at 0x7f22e6c69280>
+<qubelsi.ad5328.AD5328 object at 0x7f22e6c69280>
 >>> q.gpio
-<qube_lsi.gpio.GPIO object at 0x7f22e6c69910>
+<qubelsi.gpio.GPIO object at 0x7f22e6c69910>
 >>> q.gpio.read_value()
 16383
 >>> 
