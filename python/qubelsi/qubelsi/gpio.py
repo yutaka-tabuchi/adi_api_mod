@@ -10,3 +10,7 @@ class GPIO:
 
     def read_value(self):
         return self.handle.read_gpio()
+
+    def do_init(self, message_out=False):
+        self.write_value(0xffff)
+        return self.read_value()

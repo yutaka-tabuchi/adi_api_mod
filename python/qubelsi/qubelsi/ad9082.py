@@ -33,8 +33,19 @@ class AD9082:
         ret = subprocess.check_output(cmd, encoding='utf-8')
         return ret
 
+    def get_jesd_status(self):
+        self._setenv()
+        ret = subprocess.check_output("{}/get_jesd_status".format(self.path), encoding='utf-8')
+        return [x for x in [x.split('=') for x in ret.split('\n')] if len(x) == 2]
+
     def write_value(self, addr, value):
         return self.handle.write_ad9082(self.chip, addr, value)
 
     def read_value(self, addr):
         return self.handle.read_ad9082(self.chip, addr)
+
+    def do_init(self, message_out=False):
+        self._setenv()
+        ret = subprocess.check_output("{}/../v1.0.6/src/hello".format(self.path), encoding='utf-8')
+        if message_out:
+            print(ret)
