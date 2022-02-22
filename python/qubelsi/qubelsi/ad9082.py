@@ -44,7 +44,7 @@ class AD9082:
 
     def set_fsc(self, ch, value, rerun_cal=False):
         self._setenv()
-        cmd = ["{}/src/set_xbar".format(self.path),
+        cmd = ["{}/src/set_fsc".format(self.path),
                "--channel={}".format(ch),
                "--value={}".format(value),
         ]
