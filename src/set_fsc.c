@@ -24,10 +24,11 @@ void ad9082_setup(adi_ad9081_device_t *dev, struct env *e)
 
 void print_usage()
 {
-    printf("usage: set_xbar\n");
+    printf("usage: set_fsc\n");
     printf("\t--help           \tprint this message\n");
-    printf("\t--channel        \tset target channel (between 0 and 3)\n");
-    printf("\t--value          \tassign digital channel mask(hex string, between 00 to FF)\n");
+    printf("\t--channel=CH     \tset target channel (between 0 and 3)\n");
+    printf("\t--value=VALUE    \tfull-scale current (uA), between 7000 to 40000\n");
+    printf("\t--rerun-cal      \tdo rerun-cal after setting full-scale current\n");
     printf("\t--disable-message\tsuppress human readable message\n");
 }
 
@@ -97,7 +98,7 @@ void parse_arg(int argc, char **argv, struct env *e)
     }
 
     if(!e->disabled_messages){
-        printf("set_fcs: ch=%d, uA=%02x, rerun_cal=%d\n", e->ch, e->uA, e->rerun_cal);
+        printf("set_fcs: ch=%d, uA=%d, rerun_cal=%d\n", e->ch, e->uA, e->rerun_cal);
     }
 
     if(validate_env(e) == 0){
