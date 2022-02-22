@@ -14,6 +14,7 @@ TARGETS = hello \
           udpsendrecv \
           set_nco \
           set_xbar \
+          set_fsc \
           set_dac_lane_mapping \
           get_jesd_status \
           print_ad9082_info
@@ -37,6 +38,9 @@ set_nco: ${LIBRARIES} set_nco.c
 	gcc -O0 -o $@ $^
 
 set_xbar: ${LIBRARIES} set_xbar.c
+	gcc -O0 -o $@ $^
+
+set_fsc: ${LIBRARIES} set_fsc.c
 	gcc -O0 -o $@ $^
 
 set_dac_lane_mapping: ${LIBRARIES} set_dac_lane_mapping.c

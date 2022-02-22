@@ -33,6 +33,26 @@ class AD9082:
         ret = subprocess.check_output(cmd, encoding='utf-8')
         return ret
 
+    def set_xbar(self, ch, value):
+        self._setenv()
+        cmd = ["{}/src/set_xbar".format(self.path),
+               "--channel={}".format(ch),
+               "--value={:02x}".format(value),
+        ]
+        ret = subprocess.check_output(cmd, encoding='utf-8')
+        return ret
+
+    def set_fsc(self, ch, value, rerun_cal=False):
+        self._setenv()
+        cmd = ["{}/src/set_xbar".format(self.path),
+               "--channel={}".format(ch),
+               "--value={}".format(value),
+        ]
+        if rerun_cal:
+            cmd.append("--rerun-cal")
+        ret = subprocess.check_output(cmd, encoding='utf-8')
+        return ret
+
     def get_jesd_status(self):
         self._setenv()
         ret = subprocess.check_output("{}/src/get_jesd_status".format(self.path), encoding='utf-8')
