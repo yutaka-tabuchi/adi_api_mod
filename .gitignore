@@ -15,3 +15,4 @@ print_ad9082_info
 .nfs*
 *.egg-info
 build
+README.pdf
