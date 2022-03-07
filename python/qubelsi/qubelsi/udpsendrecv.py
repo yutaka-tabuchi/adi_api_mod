@@ -66,7 +66,7 @@ class UDPSendRecv:
         commands.append("w")
         commands.append(str(chip))
         commands.append("{:04x}".format(addr))
-        commands.append("{:02x}".format(value))
+        commands.append("{:04x}".format(value))
         return self._sendrecv(commands)
     
     def write_adrf6780(self, chip, addr, value):
@@ -75,7 +75,7 @@ class UDPSendRecv:
         commands.append("w")
         commands.append(str(chip))
         commands.append("{:04x}".format(addr))
-        commands.append("{:02x}".format(value))
+        commands.append("{:04x}".format(value))
         return self._sendrecv(commands)
 
     def write_lmx2594(self, chip, addr, value):
@@ -84,7 +84,7 @@ class UDPSendRecv:
         commands.append("w")
         commands.append(str(chip))
         commands.append("{:04x}".format(addr))
-        commands.append("{:02x}".format(value))
+        commands.append("{:04x}".format(value))
         return self._sendrecv(commands)
     
     def write_ad5328(self, addr, value):
@@ -92,12 +92,12 @@ class UDPSendRecv:
         commands.append("ad5328")
         commands.append("w")
         commands.append("{:04x}".format(addr))
-        commands.append("{:02x}".format(value))
+        commands.append("{:04x}".format(value))
         return self._sendrecv(commands)
     
     def write_gpio(self, value):
         commands = [self.cmd]
         commands.append("gpio")
         commands.append("w")
-        commands.append("{:02x}".format(value))
+        commands.append("{:04x}".format(value))
         return self._sendrecv(commands)
