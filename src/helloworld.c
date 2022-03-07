@@ -73,7 +73,7 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
     for(i = 0; i < 8; i++){
        adi_ad9081_jesd_rx_lane_xbar_set(ad9081_dev, AD9081_LINK_0, i, i);
     }
-    uint16_t tx_gains[] = {1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
+    uint16_t tx_gains[] = {2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000};
     ret = adi_ad9081_dac_duc_nco_gains_set(ad9081_dev, tx_gains);
     if(ret < 0){ printf("dac_duc_nco_gains_set error\n"); return; }
     //adi_ad9081_dac_mode_set(ad9081_dev, AD9081_DAC_MODE_SWITCH_GROUP_ALL, AD9081_DAC_MODE_0);
@@ -83,6 +83,11 @@ void ad9082_setup(adi_ad9081_device_t *ad9081_dev)
     //adi_ad9081_dac_xbar_set(ad9081_dev, AD9081_DAC_3, 0x01);
     //adi_ad9081_dac_fsc_set(ad9081_dev, AD9081_DAC_ALL, 26000);
     //adi_ad9081_dac_duc_nco_set(ad9081_dev, AD9081_DAC_ALL, AD9081_DAC_CH_ALL, 1000000000);
+
+    adi_ad9081_hal_reg_set(ad9081_dev, 0x01B,0x0F);// DAC-mask
+    adi_ad9081_hal_reg_set(ad9081_dev, 0x117,0xA0);// fullscale-current
+    adi_ad9081_hal_reg_set(ad9081_dev, 0x118,0xFF);// fullscale-current
+
 
 #ifdef RX_ENABLE
     // Rx CONFIGURATION
