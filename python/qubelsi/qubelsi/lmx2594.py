@@ -10,7 +10,10 @@ class LMX2594:
         return self.handle.read_lmx2594(self.chip, 0x24)
 
     def write_freq_100M(self, value):
-        return self.handle.write_lmx2594(self.chip, 0x24, value)
+        val = self.handle.write_lmx2594(self.chip, 0x24, value)
+        r0 = self.handle.read_lmx2594(self.chip, 0)
+        self.handle.write_lmx2594(self.chip, 0, r0 | 0x08) # R0[3]=FCAL_EN
+        return val
 
     def write_value(self, addr, value):
         return self.handle.write_lmx2594(self.chip, addr, value)
