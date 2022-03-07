@@ -52,8 +52,10 @@ int main()
         tx_dac_chan[3] = 0x80;
     }
 
+    int64_t shift = 970L*MHZ; // 1GHz * 0.97
+    int64_t tx_main_shift[] = {shift, shift, shift, shift};
     //int64_t tx_main_shift[] = {2910L*MHZ, 2910L*MHZ, 2910L*MHZ, 2910L*MHZ }; // 3000MHz
-    int64_t tx_main_shift[] = {1000L*MHZ, 1000L*MHZ, 1000L*MHZ, 1000L*MHZ }; // 2800MHz
+    //int64_t tx_main_shift[] = {1000L*MHZ, 1000L*MHZ, 1000L*MHZ, 1000L*MHZ }; // 2800MHz
     //int64_t tx_main_shift[] = {2328*MHZ, 2328*MHZ, 2328*MHZ, 2328*MHZ }; // 2400MHz
     //int64_t tx_main_shift[] = {2134L*MHZ, 2134L*MHZ, 2134L*MHZ, 2134L*MHZ }; // 2200MHz
     //int64_t tx_main_shift[] = {1940*MHZ, 1940*MHZ, 1940*MHZ, 1940*MHZ }; // 2000MHz
@@ -92,7 +94,7 @@ int main()
     uint8_t rx_cddc_select = AD9081_ADC_CDDC_ALL;
     uint8_t rx_fddc_select = AD9081_ADC_FDDC_ALL;
     int64_t cddc_val, fdcc_val;
-    cddc_val = 1000000000;
+    cddc_val = 970L*MHZ; // 1GHz * 0.97
     fdcc_val = 0;
     int64_t cddc_shift[]={cddc_val, cddc_val, cddc_val, cddc_val};
     int64_t fdcc_shift[]={fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val, fdcc_val}; 
