@@ -27,9 +27,9 @@ class AD9082:
                "--freq={}".format(freq),
         ]
         if adc_mode:
-            cmd.append("--adc_mode")
+            cmd.append("--adc-mode")
         if fine_mode:
-            cmd.append("--fine_mode")
+            cmd.append("--fine-mode")
         ret = subprocess.check_output(cmd, encoding='utf-8')
         return ret
 
