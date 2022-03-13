@@ -1,37 +1,45 @@
 #!/bin/bash
 
+BASEDIR=`dirname $0`
+WORKDIR=`pwd`
+
 if [ -z "$TARGET_ADDR" ]; then
         echo "usage TARGET_ADDR=XXX.XXX.XXX.XXX ./setup.sh"
         exit
 fi
 
 source /tools/Xilinx/Vivado/2020.1/settings64.sh
-#export TARGET_ADDR=10.5.0.14
 
-cd $HOME/adi_api_mod/src
+cd $BASEDIR/src
 ./adrf6780.sh 
 ./lmx2594_120_a.sh 
 ./lmx2594_110_LO.sh 
 ./ad5328.sh 
 ./rfswitch.sh
 
-cd $HOME
+cd $WORKDIR
 
-#cd $HOME
-#export BITFILE=$HOME/bin/069414.bit
-#vivado -mode batch -source $HOME/config.tcl
+pwd
+if [ -n "$BITFILE" ]; then
+  vivado -mode batch -source $BASEDIR/config.tcl
+fi
 
-cd $HOME/ADI_api_106/src
+cd $BASEDIR/v1.0.6/src
+pwd
 AD9082_CHIP=1 ./hello
-cd $HOME/ADI_api_106/src
 AD9082_CHIP=0 ./hello
 
-cd $HOME/ADI_api_106/src
+cd $WORKDIR
+
+cd $BASEDIR/v1.0.6/src
+pwd
 AD9082_CHIP=1 ./hello
-cd $HOME/ADI_api_106/src
 AD9082_CHIP=0 ./hello
 
-cd $HOME
+cd $WORKDIR
 
-echo "setup done for" ${TARGET_ADDR}
-
+echo "script:" ${BASEDIR}
+echo "target:" ${TARGET_ADDR}
+if [ -n "$BITFILE" ]; then
+  echo "FPGA:", $BITFILE
+fi

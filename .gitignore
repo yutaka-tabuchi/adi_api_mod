@@ -16,3 +16,5 @@ print_ad9082_info
 *.egg-info
 build
 README.pdf
+vivado*.jou
+vivado*.log
