@@ -42,7 +42,7 @@ void ad9082_setup(adi_ad9081_device_t *dev, struct env *e)
             adc_freq_hz = dev->dev_info.adc_freq_hz;
             uint64_t cddc_dcm_value = adi_ad9081_adc_ddc_coarse_dcm_decode(AD9081_CDDC_DCM_6); // SHOULD be same value defined in helloworld.c
             adc_freq_hz = adc_freq_hz / cddc_dcm_value;
-            err = adi_ad9081_hal_calc_tx_nco_ftw(dev, adc_freq_hz, e->freq, &ftw);
+            err = adi_ad9081_hal_calc_rx_nco_ftw(dev, adc_freq_hz, e->freq, &ftw);
             err = adi_ad9081_adc_ddc_fine_nco_ftw_set(dev, fddc, ftw, 0, 0);
         }
     }
