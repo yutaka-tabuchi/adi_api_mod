@@ -20,16 +20,24 @@ class AD9082:
         ret = subprocess.check_output("{}/src/print_ad9082_info".format(self.path), encoding='utf-8')
         return ret
 
-    def set_nco(self, freq, ch, adc_mode=False, fine_mode=False):
+    def set_nco(self, freq, ch=-1, adc_mode=False, fine_mode=False, both_mode=False, adc_ch=-1, dac_ch=-1):
         self._setenv()
         cmd = ["{}/src/set_nco".format(self.path),
-               "--channel={}".format(ch),
                "--freq={}".format(freq),
         ]
-        if adc_mode:
-            cmd.append("--adc-mode")
-        if fine_mode:
+        
+        if both_mode: # set both of ADC and DAC
+            cmd.append("--both-mode")
+            cmd.append("--adc_channel={}".format(adc_ch))
+            cmd.append("--dac_channel={}".format(dac_ch))
+        else: # set ADC xor DAC
+            cmd.append("--channel={}".format(ch))
+            if adc_mode: # set ADC (default; DAC)
+                cmd.append("--adc-mode")
+
+        if fine_mode: # set fine-mode (default; coarse-mode)
             cmd.append("--fine-mode")
+
         ret = subprocess.check_output(cmd, encoding='utf-8')
         return ret
 
