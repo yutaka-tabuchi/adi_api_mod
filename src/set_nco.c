@@ -51,7 +51,7 @@ void ad9082_fine_nco_adda(adi_ad9081_device_t *dev, struct env *e)
     uint64_t cddc_dcm_value = adi_ad9081_adc_ddc_coarse_dcm_decode(AD9081_CDDC_DCM_6); // SHOULD be same value defined in helloworld.c
     //adc_freq_hz = adc_freq_hz / cddc_dcm_value;
     //err = adi_ad9081_hal_calc_rx_nco_ftw(dev, adc_freq_hz, e->freq, &ftw);
-    ftw *= 2; // use double of DAC's ftw (it is assumed that sampling freq. of DAC and ADC are 12GHz and 6GHz, respectively)
+    ftw *= 2; // use double of DAC's ftw (it is assumed that sampling freq. of DAC and ADC are 2GHz and 1GHz, respectively)
     err = adi_ad9081_adc_ddc_fine_nco_ftw_set(dev, fddc, ftw, 0, 0);
 }
 
