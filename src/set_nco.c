@@ -18,6 +18,7 @@ struct env {
     int adc_ch;
     int dac_ch;
     int64_t freq;
+    int freq_valid;
 };
 
 void ad9082_coarse_nco_adda(adi_ad9081_device_t *dev, struct env *e)
@@ -133,7 +134,7 @@ int validate_env(struct env *e)
             return 0;
         }
     }
-    if(e->freq < 0){
+    if(e->freq_valid == 0){
         return 0;
     }
     return 1;
@@ -145,7 +146,8 @@ void parse_arg(int argc, char **argv, struct env *e)
     e->adc_mode = 0; // dac-mode
     e->both_mode = 0; // adc- and dac-mode
     e->ch = -1; // default no-settings
-    e->freq = -1; // default no-settings
+    e->freq = 0; // default no-settings
+    e->freq_valid = 0; // default no-settings
     e->dac_ch = -1; // default no-settings
     e->adc_ch = -1; // default no-settings
     e->disabled_messages = 0; // enable message
@@ -189,6 +191,7 @@ void parse_arg(int argc, char **argv, struct env *e)
             break;
         case SET_FREQ:
             e->freq = atoll(optarg);
+            e->freq_valid = 1; // make e->freq valid
             break;
         case FINE_MODE:
             e->fine_mode = 1;
