@@ -60,7 +60,8 @@ void ad9082_fine_nco_adda(adi_ad9081_device_t *dev, struct env *e)
 void ad9082_setup(adi_ad9081_device_t *dev, struct env *e)
 {
     int32_t err;
-    if(e->both_mode == 0){
+    if(e->both_mode == 1){
+        // both DAC and ADC
         if(e->fine_mode == 0){ // COARSE
             ad9082_coarse_nco_adda(dev, e);
         }else{
