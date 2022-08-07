@@ -17,7 +17,7 @@
 static void print_return_packet(unsigned char* buf){
 #ifdef UDPSENDRECV_DEBUG
     for(int i = 0; i < 8; i++){
-        printf(" %x", buf[i]);
+        printf(" %02x", buf[i]);
     }
     printf("\n");
 #endif
@@ -26,7 +26,7 @@ static void print_return_packet(unsigned char* buf){
 int exstickge_ad9082(struct udp_env* env, int cs, int addr, int value, int mode){
     unsigned char mesg[8];
     unsigned char buf[8];
-#ifdef UPDSENDRECV_MAIN
+#ifdef UDPSENDRECV_MAIN
     printf("AD9082 %d %d %08x %08x\n", mode, cs, addr, value);
 #endif
     
@@ -44,7 +44,7 @@ int exstickge_ad9082(struct udp_env* env, int cs, int addr, int value, int mode)
 int exstickge_adrf6780(struct udp_env* env, int cs, int addr, int value, int mode){
     unsigned char mesg[8];
     unsigned char buf[8];
-#ifdef UPDSENDRECV_MAIN
+#ifdef UDPSENDRECV_MAIN
     printf("ADRF6780 %d %d %08x %08x\n", mode, cs, addr, value);
 #endif
     
@@ -66,7 +66,7 @@ int exstickge_adrf6780(struct udp_env* env, int cs, int addr, int value, int mod
 int exstickge_lmx2594(struct udp_env* env, int cs, int addr, int value, int mode){
     unsigned char mesg[8];
     unsigned char buf[8];
-#ifdef UPDSENDRECV_MAIN
+#ifdef UDPSENDRECV_MAIN
     printf("LMX2594 %d %d %08x %08x\n", mode, cs, addr, value);
 #endif
     
@@ -88,7 +88,7 @@ int exstickge_lmx2594(struct udp_env* env, int cs, int addr, int value, int mode
 int exstickge_ad5328(struct udp_env* env, int addr, int value, int mode){
     unsigned char mesg[8];
     unsigned char buf[8];
-#ifdef UPDSENDRECV_MAIN
+#ifdef UDPSENDRECV_MAIN
     printf("AD5328 %d %08x %08x\n", mode, addr, value);
 #endif
     
@@ -103,10 +103,28 @@ int exstickge_ad5328(struct udp_env* env, int addr, int value, int mode){
     return (int)ntohs(*(short*)&buf[6]);
 }
 
+int exstickge_ad5328_quel2(struct udp_env* env, int cs, int addr, int value, int mode){
+    unsigned char mesg[8];
+    unsigned char buf[8];
+#ifdef UDPSENDRECV_MAIN
+    printf("AD5328 %d %d %08x %08x\n", cs, mode, addr, value);
+#endif
+    
+    mesg[0] = mode == EXSTICKGE_WRITE ? 0x82 : 0x80;
+    mesg[1] = EXSTICKGE_AD5328_SPI_CTRL;
+    *(int*)(&mesg[2]) = htonl(((cs&0x07)<<4) | (addr&0x0F));
+    *(short*)(&mesg[6]) = htons(value);
+    
+    sendto(env->sock, mesg, 8, 0, (struct sockaddr *)&(env->addr), sizeof(env->addr));
+    recv(env->sock, buf, sizeof(buf), 0);
+    print_return_packet(buf);
+    return (int)ntohs(*(short*)&buf[6]);
+}
+
 int exstickge_gpio(struct udp_env* env, int value, int mode){
     unsigned char mesg[8];
     unsigned char buf[8];
-#ifdef UPDSENDRECV_MAIN
+#ifdef UDPSENDRECV_MAIN
     printf("GPIO %d %08x\n", mode, value);
 #endif
     
@@ -115,6 +133,27 @@ int exstickge_gpio(struct udp_env* env, int value, int mode){
     *(int*)(&mesg[2]) = htonl(0x00000000);
     *(short*)(&mesg[6]) = htons(value);
     
+    sendto(env->sock, mesg, 8, 0, (struct sockaddr *)&(env->addr), sizeof(env->addr));
+    recv(env->sock, buf, sizeof(buf), 0);
+    print_return_packet(buf);
+    return (int)ntohs(*(short*)&buf[6]);
+}
+
+int exstickge_ad7490(struct udp_env* env, int cs, int addr, int value, int mode){
+    unsigned char mesg[8];
+    unsigned char buf[8];
+#ifdef UDPSENDRECV_MAIN
+    printf("AD7490 %d %d %08x %08x\n", mode, cs, (addr&0x7), value);
+#endif
+    
+    mesg[0] = mode == EXSTICKGE_WRITE ? 0x82 : 0x80;
+    mesg[1] = EXSTICKGE_AD7490_SPI_CTRL;
+    *(int*)(&mesg[2]) = htonl((cs&0x1));
+    //*(int*)(&mesg[2]) = cs == 1 ? 0xFFFFFFFF : 0;
+    *(short*)(&mesg[6]) = htons((0x01<<11) | ((addr&0x7)<<6) | (0x03<<4) | (0x00<<2) | (0x01<<1) | (0x01<<0));
+    //*(short*)(&mesg[6]) = 0xFFFF;
+    
+    print_return_packet(mesg);
     sendto(env->sock, mesg, 8, 0, (struct sockaddr *)&(env->addr), sizeof(env->addr));
     recv(env->sock, buf, sizeof(buf), 0);
     print_return_packet(buf);
@@ -148,7 +187,9 @@ void print_usage(char *cmd){
     printf(" adrf6780 w/r chip addr value\n");
     printf(" lmx2594 w/r chip addr value\n");
     printf(" ad5328 w/r addr value\n");
+    printf(" ad5328 w/r chip addr value (for QuEL-2)\n");
     printf(" gpio w/r value\n");
+    printf(" ad7490 w/r chip addr value\n");
     printf("chip should be decimal, addr and value should be hex\n");
 }
 
@@ -203,9 +244,19 @@ int main(int argc, char **argv)
         int addr = strtol(argv[3], &endptr, 16);
         int value = strtol(argv[4], &endptr, 16);
         retval = exstickge_ad5328(&env, addr, value, mode);
+    }else if(strcmp(argv[1], "ad5328") == 0 && argc == 6){
+        int chip = atoi(argv[3]);
+        int addr = strtol(argv[4], &endptr, 16);
+        int value = strtol(argv[5], &endptr, 16);
+        retval = exstickge_ad5328_quel2(&env, chip, addr, value, mode);
     }else if(strcmp(argv[1], "gpio") == 0 && argc == 4){
         int value = strtol(argv[3], &endptr, 16);
         retval = exstickge_gpio(&env, value, mode);
+    }else if(strcmp(argv[1], "ad7490") == 0 && argc == 6){
+        int chip = atoi(argv[3]);
+        int addr = strtol(argv[4], &endptr, 16);
+        int value = strtol(argv[5], &endptr, 16);
+        retval = exstickge_ad7490(&env, chip, addr, value, mode);
     }else{
         printf("unknown command %s\n", argv[1]);
         print_usage(argv[0]);
