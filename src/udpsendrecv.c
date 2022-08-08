@@ -150,7 +150,7 @@ int exstickge_ad7490(struct udp_env* env, int cs, int addr, int value, int mode)
     mesg[1] = EXSTICKGE_AD7490_SPI_CTRL;
     *(int*)(&mesg[2]) = htonl((cs&0x1));
     //*(int*)(&mesg[2]) = cs == 1 ? 0xFFFFFFFF : 0;
-    *(short*)(&mesg[6]) = htons((0x01<<11) | ((addr&0x7)<<6) | (0x03<<4) | (0x00<<2) | (0x01<<1) | (0x01<<0));
+    *(short*)(&mesg[6]) = htons((0x01<<11) | ((addr&0xF)<<6) | (0x03<<4) | (0x00<<2) | (0x01<<1) | (0x01<<0));
     //*(short*)(&mesg[6]) = 0xFFFF;
     
     print_return_packet(mesg);
