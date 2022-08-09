@@ -139,6 +139,24 @@ int exstickge_gpio(struct udp_env* env, int value, int mode){
     return (int)ntohs(*(short*)&buf[6]);
 }
 
+int exstickge_userctrl(struct udp_env* env, int value, int mode){
+    unsigned char mesg[8];
+    unsigned char buf[8];
+#ifdef UDPSENDRECV_MAIN
+    printf("CTRL %d %08x\n", mode, value);
+#endif
+    
+    mesg[0] = mode == EXSTICKGE_WRITE ? 0x82 : 0x80;
+    mesg[1] = EXSTICKGE_USER_CTRL;
+    *(int*)(&mesg[2]) = htonl(0x00000000);
+    *(short*)(&mesg[6]) = htons(value);
+    
+    sendto(env->sock, mesg, 8, 0, (struct sockaddr *)&(env->addr), sizeof(env->addr));
+    recv(env->sock, buf, sizeof(buf), 0);
+    print_return_packet(buf);
+    return (int)ntohs(*(short*)&buf[6]);
+}
+
 int exstickge_ad7490(struct udp_env* env, int cs, int addr, int value, int mode){
     unsigned char mesg[8];
     unsigned char buf[8];
@@ -190,6 +208,7 @@ void print_usage(char *cmd){
     printf(" ad5328 w/r chip addr value (for QuEL-2)\n");
     printf(" gpio w/r value\n");
     printf(" ad7490 w/r chip addr value\n");
+    printf(" userctrl w/r value\n");
     printf("chip should be decimal, addr and value should be hex\n");
 }
 
@@ -257,6 +276,9 @@ int main(int argc, char **argv)
         int addr = strtol(argv[4], &endptr, 16);
         int value = strtol(argv[5], &endptr, 16);
         retval = exstickge_ad7490(&env, chip, addr, value, mode);
+    }else if(strcmp(argv[1], "userctrl") == 0 && argc == 4){
+        int value = strtol(argv[3], &endptr, 16);
+        retval = exstickge_userctrl(&env, value, mode);
     }else{
         printf("unknown command %s\n", argv[1]);
         print_usage(argv[0]);
