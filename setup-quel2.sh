@@ -11,9 +11,13 @@ fi
 source /tools/Xilinx/Vivado/2020.1/settings64.sh
 
 cd $BASEDIR/src
+# stop internal parameter update for MicroBlaze software
+./udpsendrecv userctrl w 0
+
+cd $BASEDIR/src
 ./adrf6780.sh 
-./lmx2594_120_a.sh 
-./lmx2594_110_LO.sh 
+./lmx2594_120_a_quel2.sh 
+./lmx2594_110_LO_quel2.sh 
 ./ad5328-quel2-adrf6780.sh*
 ./ad5328-quel2-heater.sh*
 ./rfswitch.sh
