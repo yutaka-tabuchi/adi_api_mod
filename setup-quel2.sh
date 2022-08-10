@@ -37,6 +37,10 @@ pwd
 AD9082_CHIP=1 ./hello
 AD9082_CHIP=0 ./hello
 
+cd $BASEDIR/src
+# start internal parameter update for MicroBlaze software
+./udpsendrecv userctrl w 1
+
 cd $WORKDIR
 
 echo "script:" ${BASEDIR}
