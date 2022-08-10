@@ -18,8 +18,8 @@ cd $BASEDIR/src
 ./adrf6780.sh 
 ./lmx2594_120_a_quel2.sh 
 ./lmx2594_110_LO_quel2.sh 
-./ad5328-quel2-adrf6780.sh*
-./ad5328-quel2-heater.sh*
+./ad5328-quel2-adrf6780.sh
+./ad5328-quel2-heater.sh
 ./rfswitch.sh
 
 cd $WORKDIR
