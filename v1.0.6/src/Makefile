@@ -8,9 +8,15 @@ LIBRARIES = adi_ad9081_adc.c \
             udpsendrecv.c \
             util.c
 
-all: hello gpio spi_i2c udpsendrecv
+all: hello hello_monitor hello_readin gpio spi_i2c udpsendrecv
 
 hello: ${LIBRARIES} helloworld.c
+	gcc -o $@ $^
+
+hello_monitor: ${LIBRARIES} helloworld-monitor.c
+	gcc -o $@ $^
+
+hello_readin: ${LIBRARIES} helloworld-readin.c
 	gcc -o $@ $^
 
 gpio: axi_gpio.c
@@ -29,4 +35,6 @@ clean:
 	-rm -f gpio
 	-rm -f spi_i2c
 	-rm -f hello
+	-rm -f hello_monitor
+	-rm -f hello_readin
 	-rm -f udpsendrecv
