@@ -17,7 +17,8 @@ TARGETS = hello \
           set_fsc \
           set_dac_lane_mapping \
           get_jesd_status \
-          print_ad9082_info
+          print_ad9082_info \
+          set_jesd_tx_link_conv_sel
 
 all: ${TARGETS}
 
@@ -51,6 +52,10 @@ get_jesd_status: ${LIBRARIES} get_jesd_status.c
 
 print_ad9082_info: ${LIBRARIES} print_ad9082_info.c
 	gcc -O0 -o $@ $^
+
+set_jesd_tx_link_conv_sel: ${LIBRARIES} set_jesd_tx_link_conv_sel.c
+	gcc -O0 -o $@ $^
+
 
 .PHONY: clean 
 

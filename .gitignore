@@ -12,6 +12,7 @@ get_jesd_status
 set_dac_lane_mapping
 set_xbar
 print_ad9082_info
+set_jesd_tx_link_conv_sel
 .nfs*
 *.egg-info
 build
