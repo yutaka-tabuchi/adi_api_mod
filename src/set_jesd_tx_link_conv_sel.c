@@ -39,7 +39,7 @@ void print_usage()
 {
     printf("usage: set_jesd_tx_link_conv_sel\n");
     printf("\t--help           \tprint this message\n");
-    printf("\t--args           \tjsed_conv_sel pattern(2,3,0,1,6,7,4,5,10,11,8,9,14,15,12,13)\n");
+    printf("\t--args           \tjsed_conv_sel pattern(ex. 2,3,0,1,6,7,4,5,10,11,8,9,14,15,12,13 )\n");
     printf("\t--disable-message\tsuppress human readable message\n");
 }
 
@@ -82,14 +82,12 @@ void parse_arg(int argc, char **argv, struct env *e)
             e->disabled_messages = 1;
             break;
         case SET_ARGS: {
-            printf("%s\n", optarg);
             int i = 0;
             char* p = strtok(optarg, ",");
             while (p != NULL) {
                 if(i < 16){
                     e->conv_sel[i] = atoi(p); i++;
                 }
-                printf("%s\n", p);
                 p = strtok(NULL, ",");
             }
         }
