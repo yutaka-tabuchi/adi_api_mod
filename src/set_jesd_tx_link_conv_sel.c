@@ -16,23 +16,11 @@ struct env {
 
 void ad9082_setup(adi_ad9081_device_t *ad9081_dev, struct env *e)
 {
-    adi_ad9081_jtx_conv_sel_t jesd_conv_sel[2]=
-        {{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15},{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}};
-    int i;
-    uint8_t *ptr = &jesd_conv_sel[0].virtual_converter0_index;
-    for(i = 0; i < 16; i++){
-        ptr[i] = e->conv_sel[i];
+    int32_t err;
+
+    for(int i = 0; i < 16; i++){
+        err = adi_ad9081_jesd_tx_conv_sel_set(ad9081_dev, AD9081_LINK_0, i, e->conv_sel[i]);
     }
-
-    // same setting with helloworld.c
-    adi_cms_jesd_param_t jesd_param[2] =
-    //  L  F   M  S HD   K   N  NP CF CS DID BID LID SCL SCR DUAL  B/C  ID  C2R   S
-    { { 8, 4, 16, 1, 0, 64, 16, 16, 0, 0,  0,  0,  0,  0,  1,   0,   2, 17,   0,  0 },
-      { 8, 4, 16, 1, 0, 64, 16, 16, 0, 0,  0,  0,  0,  0,  1,   0,   2, 17,   0,  0 } };
-
-    uint8_t links = jesd_param[0].jesd_duallink > 0 ? AD9081_LINK_ALL : AD9081_LINK_0;
-    uint8_t jesd_m[2] = { jesd_param[0].jesd_m, jesd_param[1].jesd_m };
-    int32_t err = adi_ad9081_jesd_tx_link_conv_sel_set(ad9081_dev, links, jesd_conv_sel, jesd_m);
 }
 
 void print_usage()
