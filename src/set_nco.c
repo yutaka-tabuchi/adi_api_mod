@@ -70,9 +70,35 @@ void ad9082_setup(adi_ad9081_device_t *dev, struct env *e)
     }else if(e->adc_mode == 0){
         // DAC
         if(e->fine_mode == 0){ // COARSE
-            err = adi_ad9081_dac_duc_nco_set(dev, AD9081_DAC_0 << e->ch, AD9081_DAC_CH_NONE, e->freq);
+	  /* err = adi_ad9081_dac_duc_nco_set(dev, AD9081_DAC_0 << e->ch, AD9081_DAC_CH_NONE, e->freq);
+           */
+	  { /* TABUCHI SPECIAL, mask the lowest 16 bits */
+	    uint64_t ftw;
+            err = adi_ad9081_hal_calc_tx_nco_ftw(
+                          dev, dev->dev_info.dac_freq_hz, e->freq, &ftw);
+	    if( API_CMS_ERROR_OK == err )
+              err = adi_ad9081_dac_duc_nco_ftw_set(
+                          dev, AD9081_DAC_0 << e->ch, AD9081_DAC_CH_NONE, ftw & 0xffffffff0000, 0, 0);
+	  }
         }else{ // FINE
-            err = adi_ad9081_dac_duc_nco_set(dev, AD9081_DAC_NONE, AD9081_DAC_CH_0 << e->ch, e->freq);
+	  /* err = adi_ad9081_dac_duc_nco_set(dev, AD9081_DAC_NONE, AD9081_DAC_CH_0 << e->ch, e->freq);
+           */
+          if(1){ /* TABUCHI SPECIAL, mask the lowest 18 bits */
+            uint64_t ftw;
+            uint8_t main_interp = 0;
+
+            err = adi_ad9081_hal_bf_get(dev, REG_INTRP_MODE_ADDR, BF_FINE_INTERP_SEL_INFO, &main_interp, 1);
+            if ( API_CMS_ERROR_OK == err )
+              err = adi_ad9081_dac_duc_nco_enable_set(dev, AD9081_DAC_NONE,
+						      AD9081_DAC_CH_0 << e->ch, 1);
+            if ( API_CMS_ERROR_OK == err )
+              err = adi_ad9081_hal_calc_tx_nco_ftw( dev, dev->dev_info.dac_freq_hz,
+						    e->freq * main_interp, &ftw);
+            if ( API_CMS_ERROR_OK == err )
+              err = adi_ad9081_dac_duc_nco_ftw_set( dev, AD9081_DAC_NONE,
+						    AD9081_DAC_CH_0 << e->ch,
+						    ftw & 0xfffffffc0000, 0, 0 );
+          }
         }
     }else{
         // ADC
@@ -80,7 +106,15 @@ void ad9082_setup(adi_ad9081_device_t *dev, struct env *e)
             int cddc = AD9081_ADC_CDDC_0 << e->ch;
             err = adi_ad9081_adc_ddc_coarse_nco_mode_set(dev, cddc,
                                                          (e->freq == 0) ? AD9081_ADC_NCO_ZIF : AD9081_ADC_NCO_VIF);
-            err = adi_ad9081_adc_ddc_coarse_nco_set(dev, cddc, e->freq);
+            /* err = adi_ad9081_adc_ddc_coarse_nco_set(dev, cddc, e->freq);
+             */
+	    { /* TABUCHI SPECIAL, mask the lowest 16 bits */
+	      uint64_t ftw;
+              err = adi_ad9081_hal_calc_rx_nco_ftw(
+                dev, dev->dev_info.adc_freq_hz, e->freq, &ftw);
+	      if ( API_CMS_ERROR_OK == err )
+                err = adi_ad9081_adc_ddc_coarse_nco_ftw_set(dev, cddc, ftw & 0xffffffff0000, 0, 0);
+	    }
         }else{ // FINE
             uint64_t adc_freq_hz, ftw;
             int fddc = AD9081_ADC_FDDC_0 << e->ch;
